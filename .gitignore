@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Local visual references and QA captures
+design-reference/
+design-qa/
+qa/
+qa-v2/
