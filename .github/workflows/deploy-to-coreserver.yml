@@ -1,0 +1,68 @@
+name: Deploy portfolio to kuraryu.jp
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build and deploy portfolio
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static site
+        run: npm run build
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy to CoreServer
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          WWW_TARGET: ${{ secrets.FTP_WWW_TARGET }}
+          APEX_TARGET: ${{ secrets.FTP_APEX_TARGET }}
+          SOURCE: dist/client/
+        run: |
+          emit_site_mirror_commands() {
+            target="$1"
+
+            if [ -z "$target" ]; then
+              return
+            fi
+
+            printf 'mkdir -p "%s"\n' "$target"
+
+            # The web root also contains standalone projects such as /Happa.
+            # Upload this portfolio without deletion-syncing shared directories.
+            printf 'mirror --reverse --verbose "%s" "%s"\n' "$SOURCE" "$target"
+          }
+
+          {
+            echo "set cmd:fail-exit yes"
+            echo "set ftp:ssl-allow true"
+            echo "set ssl:verify-certificate false"
+            echo "set net:timeout 30"
+            echo "set net:max-retries 3"
+            emit_site_mirror_commands "$WWW_TARGET"
+            emit_site_mirror_commands "$APEX_TARGET"
+            echo "bye"
+          } > .deploy-lftp
+
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" -p "$FTP_PORT" "$SFTP_HOST" < .deploy-lftp
