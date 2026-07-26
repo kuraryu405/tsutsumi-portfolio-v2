@@ -2,6 +2,54 @@
 
 final result: passed
 
+## Pass 5 — Accelerated Intro and Simplified Social Rows
+
+- Source visual truth:
+  - `qa-v2/30-final-hero-1280.png` — the previously approved 1280 px opening state whose visual composition needed to survive the renderer change.
+  - `/var/folders/s1/ws0tkss97j57y81jcbpy8ky80000gn/T/codex-clipboard-81be22c4-d0e8-4f9a-b3eb-6871e0d1a73b.png` — the social-row crop, interpreted together with the user’s explicit direction to remove both the coral vertical bar and the leading row numbers.
+- Browser-rendered implementation:
+  - `qa-v4/hero-webgl-start.png`
+  - `qa-v4/hero-webgl-mid.png`
+  - `qa-v4/hero-webgl-end.png`
+  - `qa-v4/hero-webgl-mobile.png`
+  - `qa-v4/links-no-numbers.png`
+  - `qa-v4/links-focus-no-bar.png`
+  - `qa-v4/links-no-numbers-mobile.png`
+- Combined comparison inputs opened and inspected:
+  - `qa-v4/compare-hero-approved-webgl.png`
+  - `qa-v4/compare-link-cleanup-final.png`
+- Viewports and density:
+  - Desktop browser viewport: 1280 × 720; rendered screenshot: 1265 × 712; hero canvas CSS size: 1265 × 720; device pixel ratio: 1.
+  - Mobile browser viewport: 390 × 844; rendered screenshot: 375 × 812; hero canvas CSS size: 375 × 844; device pixel ratio: 1.
+  - The approved hero source and current desktop capture are both 1265 × 712, so no density normalization was required.
+- States tested:
+  - Intro start, scroll-driven text-mask expansion, and rectangular full-background completion.
+  - Desktop social-row default and keyboard focus states.
+  - Mobile intro and social-row layouts.
+- Full-view comparison:
+  - The WebGL opening preserves the real `pc.webp` image inside the full two-line headline, its black field, oversized Japanese typography, and the same rectangular full-background destination.
+  - The GPU path remains visually consistent at the start, middle, and end of the Morph; the 2048 px source texture introduces no visible softness at the tested viewports.
+- Focused comparison:
+  - The social-row crop confirms that the coral inset bar and leading sequence number are absent while the paper surface, horizontal rules, icon, title, handle, and arrow remain.
+- Required fidelity surfaces:
+  - Fonts and typography: Noto Sans JP and IBM Plex Mono remain unchanged; headline scale, line height, and wrapping match the approved opening.
+  - Spacing and layout rhythm: removing the number column shifts the icon/title group left without changing row height or the horizontal rules. Desktop and mobile have no horizontal overflow.
+  - Colors and tokens: black, paper, violet, and coral tokens remain unchanged; link focus keeps the subtle paper-dark tint without an accent bar.
+  - Image quality: `pc.webp` is uploaded once to a 2048 px GPU texture and remains sharp at 1280 px desktop and 390 px mobile.
+  - Copy and content: social links retain their authentic names and handles; only the decorative 01 / 02 / 03 labels were removed.
+- Accessibility and interaction:
+  - The semantic hidden hero `h1` remains intact.
+  - Keyboard focus on the X row produced `box-shadow: none`, `border-left-width: 0px`, and preserved the visible focus outline.
+  - Browser console warnings/errors: none.
+- Comparison history:
+  - P1 performance risk: the opening previously rebuilt four full-viewport 2D canvases, rerasterized the Japanese text, filtered the source image, and recomposited every scroll update.
+    - Fix: replaced the per-scroll 2D pipeline with one WebGL2 draw call. The image and glyph mask upload only on load/resize; scroll updates change uniforms only. No Three.js dependency was added because no scene graph is needed.
+    - Post-fix evidence: `qa-v4/hero-webgl-start.png`, `qa-v4/hero-webgl-mid.png`, and `qa-v4/hero-webgl-end.png`.
+  - P2 visual mismatch: the social-row focus state had a coral inset bar, and the rows still had decorative sequence numbers.
+    - Fix: removed the inset shadow and number elements, then changed desktop/tablet/mobile grid tracks from five/four columns to four/three columns.
+    - Post-fix evidence: `qa-v4/links-focus-no-bar.png`, `qa-v4/links-no-numbers.png`, and `qa-v4/links-no-numbers-mobile.png`.
+- No actionable P0, P1, or P2 issues remain in this pass.
+
 ## Comparison Setup
 
 - Source visual truth:
@@ -10,6 +58,9 @@ final result: passed
   - `/var/folders/s1/ws0tkss97j57y81jcbpy8ky80000gn/T/codex-clipboard-c6007661-51fa-4cc5-bb9b-f6ad44df75c9.png` — Links layout reference, 1771 × 762 px.
   - The user-approved implementation plan in the task: one message per viewport, text-mask Morph, four large 16:10 Works panels, vertical-scroll/horizontal-project flow, larger About/Community/Links content.
 - Browser-rendered implementation:
+  - `qa-v3/06-profile-fixed.png`
+  - `qa-v3/05-community-motion-b.png`
+  - `qa-v3/07-profile-mobile.png`
   - `qa-v2/26-hero-2543x1401.png`
   - `qa-v2/24-works-2517x1374.png`
   - `qa-v2/25-links-1771x762.png`
@@ -36,6 +87,7 @@ final result: passed
   - Community default state.
   - Links default state after icon and hover treatment correction.
   - Mobile hero, menu open, menu navigation, Works, project detail, About, Community, and Links.
+  - Profile desktop/mobile states and two timed Community motion states.
 - The Works comparison uses different active projects, so it was used only to judge the requested change in card scale, aspect ratio, typography, spacing, and orbit density. Project selection correctness was verified separately for all four works.
 
 ## Findings
@@ -60,7 +112,7 @@ No actionable P0, P1, or P2 issues remain.
 
 ### Colors and Visual Tokens
 
-- Black, warm paper, violet, and coral remain consistent across all six sections.
+- Black, warm paper, violet, and coral remain consistent across all seven sections.
 - Image-backed slides use a stable scrim, and the mobile project rail has sufficient separation from both light and dark project imagery.
 - X and GitHub use black SVG assets on paper. Qiita retains its green brand asset.
 - Link hover/focus no longer replaces the whole row with a hard black block; it uses a subtle paper-dark tint and a coral inset marker without creating a new border seam.
@@ -88,7 +140,9 @@ No actionable P0, P1, or P2 issues remain.
   - long-long-url → `long-long-urlへ移動`
   - INIAD Quest → `INIAD Questへ移動`
 - ArrowRight and ArrowLeft moved between project positions. The project track released naturally into About; no scroll trap remained.
-- Mobile menu opened as an opaque overlay, exposed all six destinations, navigated to Works, and closed automatically.
+- Mobile menu opened as an opaque overlay, exposed all seven destinations, navigated to Works, and closed automatically.
+- The new Profile chapter identifies the owner as 「つつみん / TSUTSUMIN」 and uses the supplied profile image and biography from the original portfolio.
+- Community cards now animate independently around the shared orbit while the field also responds to pointer position.
 - About direct selection locked the image and description. Pointer-preview handlers and tap/swipe handlers are present; the Browser pointer-move API did not expose a CSS hover state, so hover was not claimed from automation alone.
 - Reduced-motion CSS removes the horizontal track, stacks project slides vertically, hides the shared-element launch overlay/rail, and disables animated/smooth transitions. The selected in-app browser did not expose motion-preference emulation, so this fallback was verified from the active media rule and production CSS rather than a browser screenshot.
 - Browser console errors: none. Only Vite connection and React DevTools informational messages were present.
@@ -135,6 +189,15 @@ No actionable P0, P1, or P2 issues remain.
 - Rechecked the complete flow at 1280 × 720 and the primary responsive sections at 1440 × 900, 2560 × 1440, and 390 × 844.
 - Re-ran all four Works launches, keyboard project navigation, project-to-About release, About locking, mobile menu navigation, layout overflow checks, and browser console checks.
 - No actionable P0, P1, or P2 findings remained.
+
+### Pass 4
+
+- P1: The opening and existing hobby content did not explain whose portfolio this is.
+  - Fix: added a dedicated Profile chapter immediately after the intro using the original portfolio’s real name, photograph, student status, biography, location, and technical interests.
+  - Post-fix evidence: `qa-v3/06-profile-fixed.png`, `qa-v3/07-profile-mobile.png`.
+- P2: Works communicated a moving planetary system, while Community cards remained visually static.
+  - Fix: moved each Community card onto an independently timed floating wrapper, accelerated the orbit line, and added pointer-relative parallax variables.
+  - Post-fix evidence: `qa-v3/04-community-motion-a.png`, `qa-v3/05-community-motion-b.png`; all three computed transforms changed between captures.
 
 ## Follow-up Polish
 
