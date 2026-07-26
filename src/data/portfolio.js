@@ -155,10 +155,10 @@ export const mutualLinks = [
     href: "https://me.tenelol.dev/",
     title: "Yuki Matsuda",
     relationship: "FRIEND / ENGINEER",
-    image: "/images/yukimatsuda.jpg",
-    imageWidth: 1200,
-    imageHeight: 630,
-    imageWidths: [128, 256],
+    image: "/images/yuki-matsuda-orbit.jpg",
+    imageWidth: 180,
+    imageHeight: 180,
+    imageWidths: [],
   },
   /*
   {
