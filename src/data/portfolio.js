@@ -160,6 +160,7 @@ export const mutualLinks = [
     imageHeight: 630,
     imageWidths: [128, 256],
   },
+  /*
   {
     id: "independent-demo",
     orbit: { type: "system" },
@@ -173,6 +174,7 @@ export const mutualLinks = [
     imageWidths: [128, 256],
     ariaLabel: "所属なし相互リンクの表示デモ",
   },
+  */
 ];
 
 export const socialLinks = [

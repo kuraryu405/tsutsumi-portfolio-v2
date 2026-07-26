@@ -800,6 +800,7 @@ img {
   width: max-content;
   height: 100%;
   will-change: transform;
+  transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-slide {
@@ -1458,6 +1459,10 @@ img {
   white-space: nowrap;
 }
 
+.mobile-friends {
+  display: none;
+}
+
 .friend-label strong {
   overflow: hidden;
   font-size: 13px;
@@ -2108,7 +2113,8 @@ img {
   }
 
   .affiliations-section {
-    min-height: 1200px;
+    min-height: auto;
+    padding-bottom: 140px;
   }
 
   .affiliations-section h2 {
@@ -2122,95 +2128,171 @@ img {
     position: relative;
     top: auto;
     right: auto;
+    display: flex;
     width: 100%;
-    height: 790px;
-    margin-top: 24px;
+    height: auto;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 52px;
   }
 
   .community-orbit {
-    inset: 15% -28% 12%;
+    inset: -36px -45vw auto;
+    height: min(100vw, 430px);
+    border-color: rgba(243, 241, 235, 0.1);
   }
 
   .community-copy {
-    width: 230px;
+    position: relative;
+    top: auto;
+    left: auto;
+    z-index: 5;
+    width: 100%;
+    min-height: 210px;
+    padding: 30px 20px 34px;
+    border-top: 1px solid rgba(141, 112, 255, 0.55);
+    border-bottom: 1px solid rgba(243, 241, 235, 0.16);
+    text-align: left;
+    transform: none;
   }
 
   .community-copy strong {
-    font-size: 27px;
+    margin: 16px 0 12px;
+    font-size: clamp(34px, 10vw, 46px);
   }
 
   .community-copy p {
-    font-size: 14px;
+    max-width: 32em;
+    font-size: 15px;
+    line-height: 1.75;
   }
 
   .community-node {
-    grid-template-columns: 86px 1fr auto;
-    width: min(300px, 88vw);
-    min-height: 106px;
-    padding: 10px;
+    grid-template-columns: 96px minmax(0, 1fr) auto;
+    width: 100%;
+    min-height: 128px;
+    padding: 14px;
   }
 
   .community-node img {
-    width: 86px;
-    height: 58px;
+    width: 96px;
+    height: 72px;
   }
 
+  .community-node:hover,
+  .community-node:focus-visible,
+  .community-node.active {
+    transform: none;
+  }
+
+  .community-node-wrap,
   .community-node-wrap.node-1 {
-    left: 5%;
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    animation: none;
   }
 
   .community-node-wrap.node-2 {
-    top: 55%;
-    right: -8%;
+    top: auto;
+    right: auto;
   }
 
   .community-node-wrap.node-3 {
-    bottom: 30px;
-    left: 12%;
+    bottom: auto;
+    left: auto;
   }
 
   .friend-orbit {
-    width: 150px;
-    height: 150px;
-  }
-
-  .friend-orbit--system {
-    top: 48%;
-    width: 220px;
-    height: 220px;
-  }
-
-  .friend-orbit-caption {
-    top: -15px;
-  }
-
-  .friend-satellite a {
-    right: -100px;
-    width: 200px;
-  }
-
-  .friend-satellite svg {
     display: none;
   }
 
-  .friend-orbit--system .friend-satellite a {
-    right: -80px;
-    width: 160px;
-    min-height: 68px;
-    grid-template-columns: 52px minmax(0, 1fr);
+  .mobile-friends {
+    position: relative;
+    z-index: 6;
+    display: grid;
+    order: 10;
+    width: 100%;
+    gap: 12px;
+    margin-top: 54px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(243, 241, 235, 0.28);
   }
 
-  .friend-orbit--system .friend-planet {
-    width: 52px;
-    height: 52px;
+  .mobile-friends-heading {
+    margin-bottom: 24px;
   }
 
-  .friend-orbit--system .friend-label > span {
-    display: none;
+  .mobile-friends-heading > span {
+    color: var(--violet);
+    font-size: 10px;
+    letter-spacing: 0.14em;
   }
 
-  .friend-orbit--system .friend-label small {
-    display: none;
+  .mobile-friends-heading h3 {
+    margin: 12px 0 8px;
+    font-size: clamp(48px, 15vw, 70px);
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.07em;
+  }
+
+  .mobile-friends-heading p {
+    margin: 0;
+    color: rgba(243, 241, 235, 0.56);
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .mobile-friend {
+    display: grid;
+    width: 100%;
+    min-height: 104px;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 13px;
+    border: 1px solid rgba(243, 241, 235, 0.24);
+    background: #111;
+  }
+
+  .mobile-friend img {
+    width: 76px;
+    height: 76px;
+    border: 1px solid rgba(243, 241, 235, 0.42);
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .mobile-friend > span {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .mobile-friend small {
+    color: rgba(243, 241, 235, 0.42);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  }
+
+  .mobile-friend strong {
+    font-size: 15px;
+  }
+
+  .mobile-friend em {
+    overflow: hidden;
+    color: var(--paper-muted);
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: 11px;
+    font-style: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .friend-orbit--system .friend-label strong {

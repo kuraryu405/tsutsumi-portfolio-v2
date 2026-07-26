@@ -12,6 +12,7 @@ export function useProjectNavigation() {
   const [projectProgress, setProjectProgress] = useState(1 / (works.length - 1));
   const [launch, setLaunch] = useState(null);
   const launchTimers = useRef([]);
+  const settleTimer = useRef(0);
 
   const getSequencePosition = useCallback(
     (index, startIndex = projectStartIndex) =>
@@ -66,6 +67,7 @@ export function useProjectNavigation() {
   useEffect(
     () => () => {
       launchTimers.current.forEach(window.clearTimeout);
+      window.clearTimeout(settleTimer.current);
     },
     [],
   );
@@ -84,9 +86,21 @@ export function useProjectNavigation() {
         const progress = clamp(-rect.top / distance);
         const position = Math.round(progress * (works.length - 1));
         const index = (projectStartIndex + position) % works.length;
+        const snappedProgress = position / (works.length - 1);
 
-        setProjectProgress(progress);
+        setProjectProgress(snappedProgress);
         setSelectedWork((current) => (current === index ? current : index));
+
+        if (
+          rect.top < 0 &&
+          rect.bottom > window.innerHeight &&
+          Math.abs(progress - snappedProgress) > 0.002
+        ) {
+          window.clearTimeout(settleTimer.current);
+          settleTimer.current = window.setTimeout(() => {
+            scrollToProject(index, "smooth", projectStartIndex);
+          }, 110);
+        }
       });
     };
 
@@ -96,10 +110,11 @@ export function useProjectNavigation() {
 
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(settleTimer.current);
       window.removeEventListener("scroll", updateScroll);
       window.removeEventListener("resize", updateScroll);
     };
-  }, [projectStartIndex]);
+  }, [projectStartIndex, scrollToProject]);
 
   return {
     launch,

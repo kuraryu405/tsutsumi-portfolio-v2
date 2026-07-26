@@ -5,6 +5,55 @@ import { PageCount } from "../components/PageCount";
 import { ResponsiveImage } from "../components/ResponsiveImage";
 import { affiliations, mutualLinks } from "../data/portfolio";
 
+function MobileFriends() {
+  return (
+    <aside className="mobile-friends" aria-labelledby="mobile-friends-title">
+      <div className="mobile-friends-heading">
+        <span>07 / FRIENDS</span>
+        <h3 id="mobile-friends-title">FRIENDS</h3>
+        <p>コミュニティからつながった、ものづくりの仲間。</p>
+      </div>
+      {mutualLinks.map((friend, index) => {
+        const affiliation = affiliations.find(
+          (item) =>
+            friend.orbit.type === "affiliation" &&
+            item.id === friend.orbit.id,
+        );
+        const connection = affiliation
+          ? `${affiliation.title}からつながった友人`
+          : "コミュニティを越えてつながった友人";
+
+        return (
+          <a
+            className="mobile-friend"
+            href={friend.href}
+            target={friend.external === false ? undefined : "_blank"}
+            rel={friend.external === false ? undefined : "noreferrer"}
+            key={friend.id}
+          >
+            <ResponsiveImage
+              src={friend.image}
+              width={friend.imageWidth}
+              height={friend.imageHeight}
+              widths={friend.imageWidths}
+              sizes="76px"
+              alt=""
+            />
+            <span>
+              <small>
+                FRIEND / {String(index + 1).padStart(2, "0")}
+              </small>
+              <strong>{friend.title}</strong>
+              <em>{connection}</em>
+            </span>
+            <ArrowUpRight size={20} weight="bold" aria-hidden="true" />
+          </a>
+        );
+      })}
+    </aside>
+  );
+}
+
 export function CommunitySection() {
   const [active, setActive] = useState(0);
   const fieldRef = useRef(null);
@@ -105,6 +154,7 @@ export function CommunitySection() {
             </div>
           );
         })}
+        <MobileFriends />
       </div>
       <PageCount current={6} />
     </section>

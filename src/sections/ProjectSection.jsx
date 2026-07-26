@@ -130,6 +130,75 @@ export function ProjectSection({ progress, activeIndex, startIndex, onNavigate }
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [activeIndex, onNavigate, sequence]);
 
+  useEffect(() => {
+    const section = document.getElementById("project");
+    if (!section) return undefined;
+
+    let touchStartY = null;
+    let wheelDelta = 0;
+    let wheelLocked = false;
+
+    const moveOneProject = (direction) => {
+      const rect = section.getBoundingClientRect();
+      const isActive = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
+      if (!isActive) return false;
+
+      const activePosition = sequence.indexOf(activeIndex);
+      const nextPosition = activePosition + direction;
+
+      if (nextPosition >= 0 && nextPosition < sequence.length) {
+        onNavigate(sequence[nextPosition]);
+        return true;
+      }
+
+      const targetId = direction > 0 ? "about" : "works";
+      document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
+      return true;
+    };
+
+    const onTouchStart = (event) => {
+      touchStartY = event.touches[0]?.clientY ?? null;
+    };
+
+    const onTouchEnd = (event) => {
+      if (touchStartY === null) return;
+      const endY = event.changedTouches[0]?.clientY ?? touchStartY;
+      const delta = touchStartY - endY;
+      touchStartY = null;
+      if (Math.abs(delta) >= 24) moveOneProject(delta > 0 ? 1 : -1);
+      else onNavigate(activeIndex);
+    };
+
+    const onWheel = (event) => {
+      const rect = section.getBoundingClientRect();
+      const isActive = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
+      if (!isActive || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
+      event.preventDefault();
+      if (wheelLocked) return;
+
+      wheelDelta += event.deltaY;
+      if (Math.abs(wheelDelta) < 18) return;
+
+      wheelLocked = true;
+      moveOneProject(wheelDelta > 0 ? 1 : -1);
+      wheelDelta = 0;
+      window.setTimeout(() => {
+        wheelLocked = false;
+      }, 620);
+    };
+
+    section.addEventListener("wheel", onWheel, { passive: false });
+    section.addEventListener("touchstart", onTouchStart, { passive: true });
+    section.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    return () => {
+      section.removeEventListener("wheel", onWheel);
+      section.removeEventListener("touchstart", onTouchStart);
+      section.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [activeIndex, onNavigate, sequence]);
+
   return (
     <section
       className="project-scroll-section"
