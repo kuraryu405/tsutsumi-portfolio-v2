@@ -32,11 +32,11 @@ export function ProfileSection() {
         <div className="profile-statement">
           <span>ABOUT ME</span>
           <p>
-            東京の情報系学部に所属する大学生。
+            東京の情報系学部に所属する大学生（INAID9th）
             <br />
-            フロントエンドもバックエンドも、
+            Web技術に触れていますが、パソコン系は大体なんでも好き。
             <br />
-            気になった技術はまず触って試す。
+            人々が抱える問題を仕組みで解決したい。
           </p>
           <dl>
             <div>

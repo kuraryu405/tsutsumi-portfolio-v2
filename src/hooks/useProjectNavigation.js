@@ -8,11 +8,18 @@ function prefersReducedMotion() {
 
 export function useProjectNavigation() {
   const [selectedWork, setSelectedWork] = useState(1);
+  const [projectStartIndex, setProjectStartIndex] = useState(0);
   const [projectProgress, setProjectProgress] = useState(1 / (works.length - 1));
   const [launch, setLaunch] = useState(null);
   const launchTimers = useRef([]);
 
-  const scrollToProject = useCallback((index, behavior = "smooth") => {
+  const getSequencePosition = useCallback(
+    (index, startIndex = projectStartIndex) =>
+      (index - startIndex + works.length) % works.length,
+    [projectStartIndex],
+  );
+
+  const scrollToProject = useCallback((index, behavior = "smooth", startIndex) => {
     const section = document.getElementById("project");
     if (!section) return;
 
@@ -22,17 +29,19 @@ export function useProjectNavigation() {
     }
 
     const range = Math.max(1, section.offsetHeight - window.innerHeight);
-    const top = section.offsetTop + (index / (works.length - 1)) * range;
+    const position = getSequencePosition(index, startIndex);
+    const top = section.offsetTop + (position / (works.length - 1)) * range;
     window.scrollTo({ top, behavior });
-  }, []);
+  }, [getSequencePosition]);
 
   const launchProject = useCallback(
     (index, element) => {
       setSelectedWork(index);
+      setProjectStartIndex(index);
       const image = element?.querySelector(".node-image");
 
       if (!image || prefersReducedMotion()) {
-        scrollToProject(index);
+        scrollToProject(index, "smooth", index);
         return;
       }
 
@@ -47,7 +56,7 @@ export function useProjectNavigation() {
       });
 
       launchTimers.current = [
-        window.setTimeout(() => scrollToProject(index, "instant"), 520),
+        window.setTimeout(() => scrollToProject(index, "instant", index), 520),
         window.setTimeout(() => setLaunch(null), 760),
       ];
     },
@@ -73,7 +82,8 @@ export function useProjectNavigation() {
         const rect = project.getBoundingClientRect();
         const distance = Math.max(1, project.offsetHeight - window.innerHeight);
         const progress = clamp(-rect.top / distance);
-        const index = Math.round(progress * (works.length - 1));
+        const position = Math.round(progress * (works.length - 1));
+        const index = (projectStartIndex + position) % works.length;
 
         setProjectProgress(progress);
         setSelectedWork((current) => (current === index ? current : index));
@@ -89,15 +99,15 @@ export function useProjectNavigation() {
       window.removeEventListener("scroll", updateScroll);
       window.removeEventListener("resize", updateScroll);
     };
-  }, []);
+  }, [projectStartIndex]);
 
   return {
     launch,
     launchProject,
     projectProgress,
+    projectStartIndex,
     scrollToProject,
     selectedWork,
     setSelectedWork,
   };
 }
-

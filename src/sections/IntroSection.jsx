@@ -9,6 +9,12 @@ const HERO_SOURCES = {
   desktop: "/images/optimized/pc-2048.webp",
 };
 
+const HERO_COPY = {
+  first: "Beyond the period,",
+  second: "a future yet unseen.",
+  full: "Beyond the period, a future yet unseen.",
+};
+
 function getHeroSource() {
   if (window.innerWidth <= 600) return HERO_SOURCES.mobile;
   if (window.innerWidth <= 1200) return HERO_SOURCES.tablet;
@@ -220,21 +226,57 @@ function IntroCanvas({ onSettled }) {
       gl.viewport(0, 0, pixelWidth, pixelHeight);
 
       const mobile = width <= 760;
-      const fontSize = mobile
-        ? Math.min(width * 0.12, height * 0.085)
-        : Math.min(width * 0.106, height * 0.19);
+      let fontSize = mobile
+        ? Math.min(width * 0.105, height * 0.072)
+        : Math.min(width * 0.078, height * 0.145);
       const left = mobile ? width * 0.052 : width * 0.045;
-      const secondLeft = mobile ? left : width * 0.09;
-      const firstBaseline = mobile ? height * 0.48 : height * 0.46;
-      const secondBaseline = firstBaseline + fontSize * 1.04;
+      const secondLeft = mobile ? width * 0.1 : width * 0.12;
+      const firstBaseline = mobile ? height * 0.48 : height * 0.455;
 
       maskContext.setTransform(density, 0, 0, density, 0, 0);
       maskContext.clearRect(0, 0, width, height);
       maskContext.fillStyle = "#fff";
       maskContext.font = `900 ${fontSize}px "Noto Sans JP", sans-serif`;
+      const longestLineWidth = Math.max(
+        maskContext.measureText(HERO_COPY.first).width + left,
+        maskContext.measureText(HERO_COPY.second).width + secondLeft,
+      );
+      if (longestLineWidth > width * 0.96) {
+        fontSize *= (width * 0.96) / longestLineWidth;
+        maskContext.font = `900 ${fontSize}px "Noto Sans JP", sans-serif`;
+      }
+      const secondBaseline = firstBaseline + fontSize * 1.08;
       maskContext.textBaseline = "alphabetic";
-      maskContext.fillText("好きなものを、", left, firstBaseline);
-      maskContext.fillText("つくって試す。", secondLeft, secondBaseline);
+      maskContext.fillText(HERO_COPY.first, left, firstBaseline);
+      maskContext.fillText(HERO_COPY.second, secondLeft, secondBaseline);
+
+      const periodWordStart =
+        left + maskContext.measureText("Beyond the ").width;
+      const periodWordEnd =
+        periodWordStart + maskContext.measureText("period").width;
+      const finalPeriodX =
+        secondLeft + maskContext.measureText(HERO_COPY.second).width;
+      const linkY = firstBaseline + fontSize * 0.16;
+      const finalPeriodY = secondBaseline + fontSize * 0.08;
+
+      maskContext.beginPath();
+      maskContext.moveTo(periodWordStart, linkY);
+      maskContext.lineTo(periodWordEnd, linkY);
+      maskContext.lineTo(finalPeriodX, finalPeriodY);
+      maskContext.lineWidth = Math.max(1.5, fontSize * 0.022);
+      maskContext.lineCap = "round";
+      maskContext.lineJoin = "round";
+      maskContext.strokeStyle = "#fff";
+      maskContext.stroke();
+      maskContext.beginPath();
+      maskContext.arc(
+        finalPeriodX,
+        finalPeriodY,
+        Math.max(2.5, fontSize * 0.035),
+        0,
+        Math.PI * 2,
+      );
+      maskContext.fill();
 
       gl.activeTexture(gl.TEXTURE1);
       uploadTexture(maskTexture, maskCanvas);
@@ -289,7 +331,7 @@ function IntroCanvas({ onSettled }) {
 
     const heroFontReady = document.fonts?.load(
       '900 64px "Noto Sans JP"',
-      "好きなものを、つくって試す。",
+      HERO_COPY.full,
     ) ?? Promise.resolve();
 
     image.decoding = "async";
@@ -362,8 +404,12 @@ function IntroCanvas({ onSettled }) {
     <div className="intro-media" aria-hidden="true">
       <canvas className="intro-media-canvas" ref={canvasRef} />
       <div className="intro-media-fallback">
-        <span>好きなものを、</span>
-        <span>つくって試す。</span>
+        <span>
+          Beyond the <em>period</em>,
+        </span>
+        <span>
+          a future yet unseen<span className="period-mark">.</span>
+        </span>
       </div>
     </div>
   );
@@ -375,7 +421,7 @@ export function IntroSection({ onSettled }) {
       <div className="intro-stage">
         <IntroCanvas onSettled={onSettled} />
         <h1 className="intro-semantic-title" id="intro-title">
-          好きなものを、つくって試す。
+          {HERO_COPY.full}
         </h1>
         <p className="intro-index">TOKYO / 35.6812° N</p>
         <div className="intro-byline">

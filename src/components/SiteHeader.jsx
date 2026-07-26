@@ -12,7 +12,7 @@ export function SiteHeader({ active, menuOpen, setMenuOpen }) {
         aria-label="最初の画面へ"
         onClick={closeMenu}
       >
-        TSUTSUMI
+        つつみん
       </a>
 
       <nav
@@ -43,4 +43,3 @@ export function SiteHeader({ active, menuOpen, setMenuOpen }) {
     </header>
   );
 }
-

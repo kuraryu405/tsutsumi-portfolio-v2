@@ -7,8 +7,7 @@ export const works = [
     imageWidth: 1696,
     imageHeight: 1230,
     imageWidths: [480, 960, 1600],
-    description:
-      "Next.jsで作った最初のポートフォリオ。つくり直すたび、今の自分が見えてくる。",
+    description: "自己紹介のために作ったポートフォリオ。",
     detailCopy: "今の自分を、次の自分へ渡す。",
     type: "Web design / Development",
     year: "2024",
@@ -56,7 +55,7 @@ export const works = [
     imageHeight: 909,
     imageWidths: [480, 960, 1600],
     description:
-      "INIAD生の学習を支えるため、学内情報から試験の模擬問題をつくったサイト。",
+      "INIAD生の学習支援として試験の模擬問題など学内からアクセスできる情報をもとオリジナル問題作成したサイトです。",
     detailCopy: "解くほど、次に進みたくなる学習を。",
     type: "Learning support",
     year: "2025",

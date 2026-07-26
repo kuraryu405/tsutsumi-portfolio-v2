@@ -20,6 +20,7 @@ export function App() {
     launch,
     launchProject,
     projectProgress,
+    projectStartIndex,
     scrollToProject,
     selectedWork,
     setSelectedWork,
@@ -69,6 +70,7 @@ export function App() {
         <ProjectSection
           progress={projectProgress}
           activeIndex={selectedWork}
+          startIndex={projectStartIndex}
           onNavigate={scrollToProject}
         />
         <AboutSection />

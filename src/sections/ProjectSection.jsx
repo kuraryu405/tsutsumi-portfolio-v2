@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,9 +8,13 @@ import { PageCount } from "../components/PageCount";
 import { ResponsiveImage } from "../components/ResponsiveImage";
 import { works } from "../data/portfolio";
 
-function ProjectRail({ activeIndex, onNavigate }) {
-  const previous = activeIndex > 0 ? works[activeIndex - 1] : null;
-  const next = activeIndex < works.length - 1 ? works[activeIndex + 1] : null;
+function ProjectRail({ activeIndex, sequence, onNavigate }) {
+  const activePosition = sequence.indexOf(activeIndex);
+  const previousIndex = activePosition > 0 ? sequence[activePosition - 1] : null;
+  const nextIndex =
+    activePosition < sequence.length - 1 ? sequence[activePosition + 1] : null;
+  const previous = previousIndex === null ? null : works[previousIndex];
+  const next = nextIndex === null ? null : works[nextIndex];
 
   return (
     <div className="project-rail">
@@ -18,7 +22,7 @@ function ProjectRail({ activeIndex, onNavigate }) {
         className="project-neighbor previous"
         type="button"
         disabled={!previous}
-        onClick={() => previous && onNavigate(activeIndex - 1)}
+        onClick={() => previous && onNavigate(previousIndex)}
       >
         <ArrowLeft size={24} weight="bold" />
         {previous ? (
@@ -47,13 +51,13 @@ function ProjectRail({ activeIndex, onNavigate }) {
       <div className="project-progress" aria-live="polite">
         <span>{String(activeIndex + 1).padStart(2, "0")}</span>
         <div>
-          {works.map((work, index) => (
+          {sequence.map((workIndex) => (
             <button
               type="button"
-              className={index === activeIndex ? "active" : ""}
-              onClick={() => onNavigate(index)}
-              aria-label={`${work.title}へ移動`}
-              key={work.slug}
+              className={workIndex === activeIndex ? "active" : ""}
+              onClick={() => onNavigate(workIndex)}
+              aria-label={`${works[workIndex].title}へ移動`}
+              key={works[workIndex].slug}
             />
           ))}
         </div>
@@ -64,7 +68,7 @@ function ProjectRail({ activeIndex, onNavigate }) {
         className="project-neighbor next"
         type="button"
         onClick={() => {
-          if (next) onNavigate(activeIndex + 1);
+          if (next) onNavigate(nextIndex);
           else document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
         }}
       >
@@ -95,7 +99,12 @@ function ProjectRail({ activeIndex, onNavigate }) {
   );
 }
 
-export function ProjectSection({ progress, activeIndex, onNavigate }) {
+export function ProjectSection({ progress, activeIndex, startIndex, onNavigate }) {
+  const sequence = useMemo(
+    () => works.map((_, position) => (startIndex + position) % works.length),
+    [startIndex],
+  );
+
   useEffect(() => {
     const onKeyDown = (event) => {
       const section = document.getElementById("project");
@@ -105,19 +114,21 @@ export function ProjectSection({ progress, activeIndex, onNavigate }) {
       const isActive = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
       if (!isActive) return;
 
-      if (event.key === "ArrowRight" && activeIndex < works.length - 1) {
+      const activePosition = sequence.indexOf(activeIndex);
+
+      if (event.key === "ArrowRight" && activePosition < sequence.length - 1) {
         event.preventDefault();
-        onNavigate(activeIndex + 1);
+        onNavigate(sequence[activePosition + 1]);
       }
-      if (event.key === "ArrowLeft" && activeIndex > 0) {
+      if (event.key === "ArrowLeft" && activePosition > 0) {
         event.preventDefault();
-        onNavigate(activeIndex - 1);
+        onNavigate(sequence[activePosition - 1]);
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeIndex, onNavigate]);
+  }, [activeIndex, onNavigate, sequence]);
 
   return (
     <section
@@ -133,41 +144,48 @@ export function ProjectSection({ progress, activeIndex, onNavigate }) {
             transform: `translate3d(${-progress * (works.length - 1) * 100}vw, 0, 0)`,
           }}
         >
-          {works.map((work, index) => (
-            <article
-              className="project-slide"
-              id={`project-${work.slug}`}
-              aria-labelledby={`project-title-${work.slug}`}
-              key={work.slug}
-            >
-              <ResponsiveImage
-                className="project-backdrop"
-                src={work.image}
-                width={work.imageWidth}
-                height={work.imageHeight}
-                widths={work.imageWidths}
-                sizes="100vw"
-                alt=""
-                style={{ objectPosition: work.focus }}
-              />
-              <div className="project-scrim" aria-hidden="true" />
-              <div className="project-meta">
-                <span>04 / PROJECT FOCUS</span>
-                <span>{work.year}</span>
-                <span>{work.type}</span>
-              </div>
-              <div className="project-copy">
-                <p>SELECTED WORK / 0{index + 1}</p>
-                <h2 id={`project-title-${work.slug}`}>{work.title}</h2>
-                <strong>{work.detailCopy}</strong>
-                <a href={work.href} target="_blank" rel="noreferrer">
-                  OPEN SITE <ArrowUpRight size={20} weight="bold" />
-                </a>
-              </div>
-            </article>
-          ))}
+          {sequence.map((workIndex) => {
+            const work = works[workIndex];
+            return (
+              <article
+                className="project-slide"
+                id={`project-${work.slug}`}
+                aria-labelledby={`project-title-${work.slug}`}
+                key={work.slug}
+              >
+                <ResponsiveImage
+                  className="project-backdrop"
+                  src={work.image}
+                  width={work.imageWidth}
+                  height={work.imageHeight}
+                  widths={work.imageWidths}
+                  sizes="100vw"
+                  alt=""
+                  style={{ objectPosition: work.focus }}
+                />
+                <div className="project-scrim" aria-hidden="true" />
+                <div className="project-meta">
+                  <span>04 / PROJECT FOCUS</span>
+                  <span>{work.year}</span>
+                  <span>{work.type}</span>
+                </div>
+                <div className="project-copy">
+                  <p>SELECTED WORK / 0{workIndex + 1}</p>
+                  <h2 id={`project-title-${work.slug}`}>{work.title}</h2>
+                  <strong>{work.detailCopy}</strong>
+                  <a href={work.href} target="_blank" rel="noreferrer">
+                    OPEN SITE <ArrowUpRight size={20} weight="bold" />
+                  </a>
+                </div>
+              </article>
+            );
+          })}
         </div>
-        <ProjectRail activeIndex={activeIndex} onNavigate={onNavigate} />
+        <ProjectRail
+          activeIndex={activeIndex}
+          sequence={sequence}
+          onNavigate={onNavigate}
+        />
         <PageCount current={4} />
       </div>
     </section>

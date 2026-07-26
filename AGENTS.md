@@ -12,9 +12,11 @@ When implementing from a selected generated mock, treat that image as the source
 - Aim for an experimental, highly capable engineer aesthetic: oversized Japanese typography, black and warm-paper surfaces, restrained violet-to-coral accents, monospaced microcopy, and no glass cards or dashboard density.
 - Use motion as navigation and storytelling, drawing from the selected Kinetic Type Stage, Magnetic Build Constellation, and Living Thesis concepts.
 - The intro's signature interaction is a scroll transition where imagery starts inside the headline letterforms and expands into the full background.
+- The intro headline copy is “Beyond the period, a future yet unseen.” Visually connect the word “period” to the closing “.” as one continuous typographic gesture.
 - The intro uses the real `pc.webp` image across the full headline, then grows that same image into a rectangular full-screen background; do not use an ellipse or capsule reveal.
 - Works should feel magnetic and spatial, but with four large 16:10 landscape panels rather than small circular crops. Titles and descriptions must remain readable without zooming.
 - A selected Works panel grows into a sticky, full-screen horizontal project sequence driven by normal vertical scrolling.
+- Clicking any Works planet starts a complete cyclic tour from that project (for example, 3 → 4 → 1 → 2), then continues to the next section; selecting a later project must not skip the earlier projects.
 - Hobby strips use hover preview plus click-to-lock on pointer devices and tap/swipe on touch devices.
 - Community cards, social rows, images, and supporting copy should be deliberately large; avoid microtype for meaningful content.
 - Social link rows should not use leading sequence numbers or a colored vertical/inset accent bar; keep the subtle paper-dark tint and spacing response.
