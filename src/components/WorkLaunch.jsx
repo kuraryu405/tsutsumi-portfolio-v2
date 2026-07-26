@@ -1,4 +1,5 @@
 import { works } from "../data/portfolio";
+import { ResponsiveImage } from "./ResponsiveImage";
 
 export function WorkLaunch({ launch }) {
   if (!launch) return null;
@@ -20,9 +21,17 @@ export function WorkLaunch({ launch }) {
       style={frame}
       aria-hidden="true"
     >
-      <img src={work.image} alt="" style={{ objectPosition: work.focus }} />
+      <ResponsiveImage
+        src={work.image}
+        width={work.imageWidth}
+        height={work.imageHeight}
+        widths={work.imageWidths}
+        sizes="100vw"
+        loading="eager"
+        alt=""
+        style={{ objectPosition: work.focus }}
+      />
       <span>{work.title}</span>
     </div>
   );
 }
-

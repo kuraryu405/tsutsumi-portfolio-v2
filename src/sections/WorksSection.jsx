@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
+import { ResponsiveImage } from "../components/ResponsiveImage";
 import { works } from "../data/portfolio";
 
 function getOrbitDensity(itemCount) {
@@ -70,7 +71,15 @@ export function WorksSection({ selected, setSelected, onOpen }) {
             aria-label={`${work.title}の詳細を見る`}
           >
             <span className="node-image">
-              <img src={work.image} alt="" style={{ objectPosition: work.focus }} />
+              <ResponsiveImage
+                src={work.image}
+                width={work.imageWidth}
+                height={work.imageHeight}
+                widths={work.imageWidths}
+                sizes="(max-width: 760px) 46vw, 20vw"
+                alt=""
+                style={{ objectPosition: work.focus }}
+              />
             </span>
             <span className="node-copy">
               <strong>{work.title}</strong>
@@ -91,4 +100,3 @@ export function WorksSection({ selected, setSelected, onOpen }) {
     </section>
   );
 }
-

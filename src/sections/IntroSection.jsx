@@ -3,6 +3,18 @@ import { ArrowDown } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
 import { clamp, lerp, smoothstep } from "../lib/math";
 
+const HERO_SOURCES = {
+  mobile: "/images/optimized/pc-960.webp",
+  tablet: "/images/optimized/pc-1600.webp",
+  desktop: "/images/optimized/pc-2048.webp",
+};
+
+function getHeroSource() {
+  if (window.innerWidth <= 600) return HERO_SOURCES.mobile;
+  if (window.innerWidth <= 1200) return HERO_SOURCES.tablet;
+  return HERO_SOURCES.desktop;
+}
+
 const VERTEX_SHADER_SOURCE = `#version 300 es
   in vec2 aPosition;
   out vec2 vUv;
@@ -109,7 +121,7 @@ function createHeroProgram(gl) {
   return program;
 }
 
-function IntroCanvas() {
+function IntroCanvas({ onSettled }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -132,6 +144,7 @@ function IntroCanvas() {
 
     if (!gl || !maskContext) {
       media?.classList.add("webgl-failed");
+      onSettled?.("fallback");
       return undefined;
     }
 
@@ -147,6 +160,19 @@ function IntroCanvas() {
     let imageTexture;
     let maskTexture;
     let uniforms;
+    let didSettle = false;
+
+    const settle = (mode) => {
+      if (cancelled || didSettle) return;
+      didSettle = true;
+      onSettled?.(mode);
+    };
+
+    const useFallback = (imageFailed = false) => {
+      media?.classList.add("webgl-failed");
+      if (imageFailed) media?.classList.add("hero-image-failed");
+      settle("fallback");
+    };
 
     const uploadTexture = (texture, source) => {
       gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -261,8 +287,15 @@ function IntroCanvas() {
       if (!frame) frame = requestAnimationFrame(update);
     };
 
-    image.src = "/images/pc.webp";
-    image.onload = () => {
+    const heroFontReady = document.fonts?.load(
+      '900 64px "Noto Sans JP"',
+      "好きなものを、つくって試す。",
+    ) ?? Promise.resolve();
+
+    image.decoding = "async";
+    image.fetchPriority = "high";
+    image.src = getHeroSource();
+    image.onload = async () => {
       try {
         program = createHeroProgram(gl);
         positionBuffer = gl.createBuffer();
@@ -289,27 +322,24 @@ function IntroCanvas() {
         gl.enableVertexAttribArray(position);
         gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
-        const imageSurface = document.createElement("canvas");
-        const imageScale = Math.min(1, 2048 / image.naturalWidth);
-        imageSurface.width = Math.round(image.naturalWidth * imageScale);
-        imageSurface.height = Math.round(image.naturalHeight * imageScale);
-        imageSurface
-          .getContext("2d")
-          .drawImage(image, 0, 0, imageSurface.width, imageSurface.height);
-
         gl.activeTexture(gl.TEXTURE0);
-        uploadTexture(imageTexture, imageSurface);
+        uploadTexture(imageTexture, image);
         gl.uniform1i(gl.getUniformLocation(program, "uImage"), 0);
         gl.uniform1i(gl.getUniformLocation(program, "uMask"), 1);
 
+        await heroFontReady;
+        if (cancelled) return;
+
         ready = true;
         media?.classList.add("webgl-ready");
-        Promise.resolve(document.fonts?.ready).then(schedule);
+        update();
+        settle("ready");
       } catch (error) {
         console.warn("The accelerated hero could not start.", error);
-        media?.classList.add("webgl-failed");
+        useFallback();
       }
     };
+    image.onerror = () => useFallback(true);
 
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
@@ -319,12 +349,14 @@ function IntroCanvas() {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      image.onload = null;
+      image.onerror = null;
       if (positionBuffer) gl.deleteBuffer(positionBuffer);
       if (imageTexture) gl.deleteTexture(imageTexture);
       if (maskTexture) gl.deleteTexture(maskTexture);
       if (program) gl.deleteProgram(program);
     };
-  }, []);
+  }, [onSettled]);
 
   return (
     <div className="intro-media" aria-hidden="true">
@@ -337,11 +369,11 @@ function IntroCanvas() {
   );
 }
 
-export function IntroSection() {
+export function IntroSection({ onSettled }) {
   return (
     <section className="intro-section" id="intro" aria-labelledby="intro-title">
       <div className="intro-stage">
-        <IntroCanvas />
+        <IntroCanvas onSettled={onSettled} />
         <h1 className="intro-semantic-title" id="intro-title">
           好きなものを、つくって試す。
         </h1>

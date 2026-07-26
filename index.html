@@ -8,9 +8,118 @@
       content="つつみんのポートフォリオ。"
     />
     <meta name="theme-color" content="#090909" />
+    <link
+      rel="preload"
+      href="/fonts/noto-sans-jp-site.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/ibm-plex-mono-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/images/optimized/pc-960.webp"
+      as="image"
+      type="image/webp"
+      media="(max-width: 600px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      href="/images/optimized/pc-1600.webp"
+      as="image"
+      type="image/webp"
+      media="(min-width: 601px) and (max-width: 1200px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      href="/images/optimized/pc-2048.webp"
+      as="image"
+      type="image/webp"
+      media="(min-width: 1201px)"
+      fetchpriority="high"
+    />
+    <style>
+      .boot-loader {
+        position: fixed;
+        z-index: 120;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: clamp(20px, 4vw, 64px);
+        color: #f3f1eb;
+        background: #090909;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        opacity: 0;
+        animation: boot-reveal 1ms linear 120ms forwards;
+        transition: opacity 180ms ease;
+      }
+
+      .boot-loader__status {
+        position: relative;
+        min-width: 6ch;
+        color: #ff694f;
+        text-align: right;
+      }
+
+      .boot-loader__ready {
+        position: absolute;
+        right: 0;
+        opacity: 0;
+      }
+
+      .boot-loader[data-state="ready"] .boot-loader__initializing {
+        opacity: 0;
+      }
+
+      .boot-loader[data-state="ready"] .boot-loader__ready {
+        opacity: 1;
+      }
+
+      .boot-loader[data-state="hidden"] {
+        pointer-events: none;
+        opacity: 0;
+        animation: none;
+      }
+
+      @keyframes boot-reveal {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .boot-loader {
+          animation-delay: 0ms;
+          transition: none;
+        }
+      }
+    </style>
     <title>つつみのポートフォリオ</title>
   </head>
   <body>
+    <div
+      class="boot-loader"
+      id="boot-loader"
+      data-state="initializing"
+      aria-hidden="true"
+    >
+      <span>INITIALIZING / TSUTSUMIN</span>
+      <span class="boot-loader__status">
+        <span class="boot-loader__initializing">BOOT</span>
+        <span class="boot-loader__ready">READY</span>
+      </span>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUpRight } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
+import { ResponsiveImage } from "../components/ResponsiveImage";
 import { socialLinks } from "../data/portfolio";
 
 export function LinksSection() {
@@ -24,7 +25,14 @@ export function LinksSection() {
       <div className="social-rows">
         {socialLinks.map((link) => (
           <a href={link.href} target="_blank" rel="noreferrer" key={link.title}>
-            <img src={link.image} alt="" />
+            <ResponsiveImage
+              src={link.image}
+              width={link.imageWidth}
+              height={link.imageHeight}
+              widths={link.imageWidths}
+              sizes="54px"
+              alt=""
+            />
             <strong>{link.title}</strong>
             <small>{link.handle}</small>
             <ArrowUpRight size={42} weight="bold" />

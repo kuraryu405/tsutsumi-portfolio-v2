@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "./components/SiteHeader";
 import { WorkLaunch } from "./components/WorkLaunch";
 import { useCursorAura } from "./hooks/useCursorAura";
@@ -27,6 +27,29 @@ export function App() {
 
   useCursorAura(shellRef);
 
+  const settleBootLoader = useCallback((mode = "ready") => {
+    const loader = document.getElementById("boot-loader");
+    if (!loader || loader.dataset.state === "hidden") return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    loader.dataset.mode = mode;
+    loader.dataset.state = "ready";
+    document.documentElement.dataset.heroState = mode;
+
+    window.setTimeout(() => {
+      loader.dataset.state = "hidden";
+      window.setTimeout(() => loader.remove(), reducedMotion ? 0 : 200);
+    }, reducedMotion ? 0 : 180);
+  }, []);
+
+  useEffect(() => {
+    const safetyTimeout = window.setTimeout(
+      () => settleBootLoader("fallback"),
+      2500,
+    );
+    return () => window.clearTimeout(safetyTimeout);
+  }, [settleBootLoader]);
+
   return (
     <div className="site-shell" ref={shellRef}>
       <div className="cursor-aura" aria-hidden="true" />
@@ -36,7 +59,7 @@ export function App() {
         setMenuOpen={setMenuOpen}
       />
       <main>
-        <IntroSection />
+        <IntroSection onSettled={settleBootLoader} />
         <ProfileSection />
         <WorksSection
           selected={selectedWork}

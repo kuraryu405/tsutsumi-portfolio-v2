@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { PageCount } from "../components/PageCount";
+import { ResponsiveImage } from "../components/ResponsiveImage";
 import { hobbies } from "../data/portfolio";
 
 export function AboutSection() {
@@ -74,7 +75,15 @@ export function AboutSection() {
             key={hobby.title}
             aria-pressed={lockedHobby === index}
           >
-            <img src={hobby.image} alt={hobby.title} draggable="false" />
+            <ResponsiveImage
+              src={hobby.image}
+              width={hobby.imageWidth}
+              height={hobby.imageHeight}
+              widths={hobby.imageWidths}
+              sizes="(max-width: 760px) 70vw, 34vw"
+              alt={hobby.title}
+              draggable="false"
+            />
             <span>{hobby.label}</span>
           </button>
         ))}
@@ -99,4 +108,3 @@ export function AboutSection() {
     </section>
   );
 }
-

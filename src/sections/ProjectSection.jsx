@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
 } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
+import { ResponsiveImage } from "../components/ResponsiveImage";
 import { works } from "../data/portfolio";
 
 function ProjectRail({ activeIndex, onNavigate }) {
@@ -22,7 +23,14 @@ function ProjectRail({ activeIndex, onNavigate }) {
         <ArrowLeft size={24} weight="bold" />
         {previous ? (
           <>
-            <img src={previous.image} alt="" />
+            <ResponsiveImage
+              src={previous.image}
+              width={previous.imageWidth}
+              height={previous.imageHeight}
+              widths={previous.imageWidths}
+              sizes="120px"
+              alt=""
+            />
             <span>
               <small>PREVIOUS</small>
               <strong>{previous.title}</strong>
@@ -66,7 +74,14 @@ function ProjectRail({ activeIndex, onNavigate }) {
               <small>NEXT</small>
               <strong>{next.title}</strong>
             </span>
-            <img src={next.image} alt="" />
+            <ResponsiveImage
+              src={next.image}
+              width={next.imageWidth}
+              height={next.imageHeight}
+              widths={next.imageWidths}
+              sizes="120px"
+              alt=""
+            />
           </>
         ) : (
           <span>
@@ -125,9 +140,13 @@ export function ProjectSection({ progress, activeIndex, onNavigate }) {
               aria-labelledby={`project-title-${work.slug}`}
               key={work.slug}
             >
-              <img
+              <ResponsiveImage
                 className="project-backdrop"
                 src={work.image}
+                width={work.imageWidth}
+                height={work.imageHeight}
+                widths={work.imageWidths}
+                sizes="100vw"
                 alt=""
                 style={{ objectPosition: work.focus }}
               />

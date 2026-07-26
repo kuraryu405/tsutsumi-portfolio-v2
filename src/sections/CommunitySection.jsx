@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
+import { ResponsiveImage } from "../components/ResponsiveImage";
 import { affiliations } from "../data/portfolio";
 
 export function CommunitySection() {
@@ -59,7 +60,14 @@ export function CommunitySection() {
               onMouseEnter={() => setActive(index)}
               onFocus={() => setActive(index)}
             >
-              <img src={item.image} alt={`${item.title}のロゴ`} />
+              <ResponsiveImage
+                src={item.image}
+                width={item.imageWidth}
+                height={item.imageHeight}
+                widths={item.imageWidths}
+                sizes="110px"
+                alt={`${item.title}のロゴ`}
+              />
               <span>
                 <small>AFFILIATION / 0{index + 1}</small>
                 <strong>{item.title}</strong>
@@ -73,4 +81,3 @@ export function CommunitySection() {
     </section>
   );
 }
-

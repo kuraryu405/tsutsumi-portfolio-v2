@@ -1,4 +1,5 @@
 import { PageCount } from "../components/PageCount";
+import { ResponsiveImage } from "../components/ResponsiveImage";
 
 export function ProfileSection() {
   return (
@@ -18,7 +19,14 @@ export function ProfileSection() {
           <strong>TSUTSUMIN</strong>
         </div>
         <figure className="profile-portrait">
-          <img src="/images/icon_github.webp" alt="つつみんのプロフィールアイコン" />
+          <ResponsiveImage
+            src="/images/icon_github.webp"
+            width={400}
+            height={400}
+            widths={[128, 256, 400]}
+            sizes="(max-width: 760px) 74vw, 24vw"
+            alt="つつみんのプロフィールアイコン"
+          />
           <figcaption>STUDENT / WEB DEVELOPMENT</figcaption>
         </figure>
         <div className="profile-statement">
@@ -50,4 +58,3 @@ export function ProfileSection() {
     </section>
   );
 }
-

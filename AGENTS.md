@@ -19,6 +19,7 @@ When implementing from a selected generated mock, treat that image as the source
 - Community cards, social rows, images, and supporting copy should be deliberately large; avoid microtype for meaningful content.
 - Social link rows should not use leading sequence numbers or a colored vertical/inset accent bar; keep the subtle paper-dark tint and spacing response.
 - Keep the intro Morph GPU-composited and avoid full-resolution multi-canvas redraws during scroll. Prefer a small direct WebGL effect over adding Three.js when a scene graph is unnecessary.
+- When the hero needs preparation time, use only the short `INITIALIZING / TSUTSUMIN` to `READY` typography loader; never add fake progress or a forced minimum duration.
 - All supplied portfolio images and logos must remain authentic.
 - Keep motion playful but functional, with a reduced-motion fallback and responsive layouts that still communicate one idea at a time.
 
