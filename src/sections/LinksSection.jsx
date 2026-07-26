@@ -41,9 +41,6 @@ export function LinksSection() {
       </div>
       <div className="links-footer">
         <p>© 2026 TSUTSUMIN</p>
-        <a href="https://me.tenelol.dev/" target="_blank" rel="noreferrer">
-          FRIEND / MATSUDA <ArrowUpRight size={15} />
-        </a>
         <a href="#intro">
           BACK TO TOP <ArrowDown className="upside" size={15} />
         </a>

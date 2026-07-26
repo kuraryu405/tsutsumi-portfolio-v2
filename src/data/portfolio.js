@@ -105,6 +105,7 @@ export const hobbies = [
 
 export const affiliations = [
   {
+    id: "tekunotes",
     href: "https://tekunotes.com",
     title: "TEKUNOTES",
     image: "/images/tekunotes.webp",
@@ -114,6 +115,7 @@ export const affiliations = [
     description: "ガジェットを、使った言葉で伝える。",
   },
   {
+    id: "tgr",
     href: "https://tgrgroup.jp",
     title: "TGR",
     image: "/images/tgr-color.min.svg",
@@ -123,6 +125,7 @@ export const affiliations = [
     description: "学生同士で、つくる熱をつなぐ。",
   },
   {
+    id: "geeken",
     href: "https://geeken-iniad.org/",
     title: "GeeKen",
     image: "/images/geeken.png",
@@ -130,6 +133,45 @@ export const affiliations = [
     imageHeight: 200,
     imageWidths: [128, 200],
     description: "大学の技術系サークルで動く。",
+  },
+];
+
+/**
+ * 相互リンクの追加先。
+ *
+ * - 特定コミュニティの衛星:
+ *   orbit: { type: "affiliation", id: "<affiliations内のid>" }
+ * - どこにも属さず、コミュニティ全体の外周を回る衛星:
+ *   orbit: { type: "system" }
+ *
+ * 本番の相互リンクでは実在するURLと本人の画像を使い、`external` は省略する。
+ * `independent-demo` は所属なし表示を確認するためのデモなので、本番データ追加時に
+ * 置き換えるか、不要なら項目ごと削除する。詳しくは README.md を参照。
+ */
+export const mutualLinks = [
+  {
+    id: "yuki-matsuda",
+    orbit: { type: "affiliation", id: "geeken" },
+    href: "https://me.tenelol.dev/",
+    title: "Yuki Matsuda",
+    relationship: "FRIEND / ENGINEER",
+    image: "/images/yukimatsuda.jpg",
+    imageWidth: 1200,
+    imageHeight: 630,
+    imageWidths: [128, 256],
+  },
+  {
+    id: "independent-demo",
+    orbit: { type: "system" },
+    href: "#links",
+    external: false,
+    title: "Demo Friend",
+    relationship: "INDEPENDENT / DEMO",
+    image: "/images/gf.webp",
+    imageWidth: 1366,
+    imageHeight: 2048,
+    imageWidths: [128, 256],
+    ariaLabel: "所属なし相互リンクの表示デモ",
   },
 ];
 

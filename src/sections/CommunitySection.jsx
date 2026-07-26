@@ -1,12 +1,16 @@
 import { useRef, useState } from "react";
 import { ArrowUpRight } from "@phosphor-icons/react";
+import { FriendOrbit } from "../components/FriendOrbit";
 import { PageCount } from "../components/PageCount";
 import { ResponsiveImage } from "../components/ResponsiveImage";
-import { affiliations } from "../data/portfolio";
+import { affiliations, mutualLinks } from "../data/portfolio";
 
 export function CommunitySection() {
   const [active, setActive] = useState(0);
   const fieldRef = useRef(null);
+  const independentFriends = mutualLinks.filter(
+    (friend) => friend.orbit.type === "system",
+  );
 
   const moveField = (event) => {
     const rect = fieldRef.current?.getBoundingClientRect();
@@ -50,32 +54,57 @@ export function CommunitySection() {
           <strong>{affiliations[active].title}</strong>
           <p>{affiliations[active].description}</p>
         </div>
-        {affiliations.map((item, index) => (
-          <div className={`community-node-wrap node-${index + 1}`} key={item.title}>
-            <a
-              className={index === active ? "community-node active" : "community-node"}
-              href={item.href}
-              target="_blank"
-              rel="noreferrer"
-              onMouseEnter={() => setActive(index)}
-              onFocus={() => setActive(index)}
+        <FriendOrbit
+          anchorTitle="コミュニティ全体"
+          friends={independentFriends}
+          label="INDEPENDENT"
+          variant="system"
+        />
+        {affiliations.map((item, index) => {
+          const orbitingFriends = mutualLinks.filter(
+            (friend) =>
+              friend.orbit.type === "affiliation" &&
+              friend.orbit.id === item.id,
+          );
+
+          return (
+            <div
+              className={`community-node-wrap node-${index + 1}${
+                orbitingFriends.length ? " has-satellites" : ""
+              }`}
+              key={item.id}
             >
-              <ResponsiveImage
-                src={item.image}
-                width={item.imageWidth}
-                height={item.imageHeight}
-                widths={item.imageWidths}
-                sizes="110px"
-                alt={`${item.title}のロゴ`}
+              <a
+                className={
+                  index === active ? "community-node active" : "community-node"
+                }
+                href={item.href}
+                target="_blank"
+                rel="noreferrer"
+                onMouseEnter={() => setActive(index)}
+                onFocus={() => setActive(index)}
+              >
+                <ResponsiveImage
+                  src={item.image}
+                  width={item.imageWidth}
+                  height={item.imageHeight}
+                  widths={item.imageWidths}
+                  sizes="110px"
+                  alt={`${item.title}のロゴ`}
+                />
+                <span>
+                  <small>AFFILIATION / 0{index + 1}</small>
+                  <strong>{item.title}</strong>
+                </span>
+                <ArrowUpRight size={22} weight="bold" />
+              </a>
+              <FriendOrbit
+                anchorTitle={item.title}
+                friends={orbitingFriends}
               />
-              <span>
-                <small>AFFILIATION / 0{index + 1}</small>
-                <strong>{item.title}</strong>
-              </span>
-              <ArrowUpRight size={22} weight="bold" />
-            </a>
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
       <PageCount current={6} />
     </section>
