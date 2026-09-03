@@ -8,3 +8,14 @@ design-reference/
 design-qa/
 qa/
 qa-v*/
+
+# Local AI coding-assistant instructions and state
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.claude/
+.cursor/
+.windsurf/
+.codex/
+.aider*
+.github/copilot-instructions.md
