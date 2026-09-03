@@ -19,6 +19,10 @@ When implementing from a selected generated mock, treat that image as the source
 - Clicking any Works planet starts a complete cyclic tour from that project (for example, 3 → 4 → 1 → 2), then continues to the next section; selecting a later project must not skip the earlier projects.
 - Hobby strips use hover preview plus click-to-lock on pointer devices and tap/swipe on touch devices.
 - Community cards, social rows, images, and supporting copy should be deliberately large; avoid microtype for meaningful content.
+- Keep the shared celestial language hierarchical: Works are large 16:10 exhibits navigated like a planetary tour, communities are the main orbiting planets, and mutual friend links are smaller readable satellites at the end of Community rather than plain footer text.
+- Each mutual friend link declares the community it orbits; Yuki Matsuda is a satellite of the GeeKen community planet.
+- Mutual friends without a community use an explicit system orbit and travel around the whole Community field; keep demo entries clearly labeled as demos.
+- On mobile, show mutual links in a separate FRIENDS block after the Community cards instead of as orbiting satellites, and state the originating community as a relationship (for example, “GeeKenからつながった友人”) so it is not mistaken for affiliation.
 - Social link rows should not use leading sequence numbers or a colored vertical/inset accent bar; keep the subtle paper-dark tint and spacing response.
 - Keep the intro Morph GPU-composited and avoid full-resolution multi-canvas redraws during scroll. Prefer a small direct WebGL effect over adding Three.js when a scene graph is unnecessary.
 - When the hero needs preparation time, use only the short `INITIALIZING / TSUTSUMIN` to `READY` typography loader; never add fake progress or a forced minimum duration.
