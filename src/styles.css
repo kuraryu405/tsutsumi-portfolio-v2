@@ -554,8 +554,8 @@ img {
   position: absolute;
   z-index: 2;
   top: 10vh;
-  right: 1vw;
-  width: min(70vw, 1180px);
+  right: 2vw;
+  width: min(48vw, 1040px);
   height: 82vh;
   min-height: 560px;
   --orbit-x: 0;
@@ -1716,12 +1716,13 @@ img {
 
   .works-section h2,
   .affiliations-section h2 {
-    width: 55vw;
-    font-size: clamp(52px, 8vw, 82px);
+    width: 43vw;
+    font-size: clamp(52px, 7.4vw, 76px);
   }
 
   .orbit-field {
-    width: 74vw;
+    right: 2vw;
+    width: 50vw;
   }
 
   .node-copy {
