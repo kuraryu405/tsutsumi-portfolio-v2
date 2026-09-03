@@ -1,4 +1,13 @@
-export const works = [
+import type {
+  Affiliation,
+  Hobby,
+  MutualLink,
+  SectionNavigationItem,
+  SocialLink,
+  Work,
+} from "../types/portfolio";
+
+export const works: Work[] = [
   {
     slug: "portfolio",
     href: "https://kuraryu.jp",
@@ -64,7 +73,7 @@ export const works = [
   },
 ];
 
-export const hobbies = [
+export const hobbies: Hobby[] = [
   {
     image: "/images/ueda.webp",
     imageWidth: 2048,
@@ -103,7 +112,7 @@ export const hobbies = [
   },
 ];
 
-export const affiliations = [
+export const affiliations: Affiliation[] = [
   {
     id: "tekunotes",
     href: "https://tekunotes.com",
@@ -148,7 +157,7 @@ export const affiliations = [
  * `independent-demo` は所属なし表示を確認するためのデモなので、本番データ追加時に
  * 置き換えるか、不要なら項目ごと削除する。詳しくは README.md を参照。
  */
-export const mutualLinks = [
+export const mutualLinks: MutualLink[] = [
   {
     id: "yuki-matsuda",
     orbit: { type: "affiliation", id: "geeken" },
@@ -177,7 +186,7 @@ export const mutualLinks = [
   */
 ];
 
-export const socialLinks = [
+export const socialLinks: SocialLink[] = [
   {
     href: "https://x.com/tsutsumin_dev",
     title: "X",
@@ -207,7 +216,7 @@ export const socialLinks = [
   },
 ];
 
-export const sections = [
+export const sections: SectionNavigationItem[] = [
   ["intro", "INTRO"],
   ["profile", "PROFILE"],
   ["works", "WORKS"],

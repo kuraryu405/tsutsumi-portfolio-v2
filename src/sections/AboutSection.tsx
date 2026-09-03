@@ -5,16 +5,16 @@ import { hobbies } from "../data/portfolio";
 
 export function AboutSection() {
   const [lockedHobby, setLockedHobby] = useState(0);
-  const [previewHobby, setPreviewHobby] = useState(null);
-  const dragStart = useRef(null);
+  const [previewHobby, setPreviewHobby] = useState<number | null>(null);
+  const dragStart = useRef<number | null>(null);
   const active = previewHobby ?? lockedHobby;
 
-  const selectHobby = (index) => {
+  const selectHobby = (index: number) => {
     setLockedHobby(index);
     setPreviewHobby(null);
   };
 
-  const endDrag = (event) => {
+  const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     if (dragStart.current === null) return;
 
     const distance = event.clientX - dragStart.current;

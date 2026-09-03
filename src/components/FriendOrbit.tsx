@@ -1,18 +1,26 @@
 import { ArrowUpRight } from "@phosphor-icons/react";
+import type { CSSVariables, MutualLink } from "../types/portfolio";
 import { ResponsiveImage } from "./ResponsiveImage";
 
-function formatCount(count) {
+function formatCount(count: number) {
   return String(count).padStart(2, "0");
 }
 
 const ORBIT_DURATION_SECONDS = 14;
+
+interface FriendOrbitProps {
+  anchorTitle: string;
+  friends: MutualLink[];
+  label?: string;
+  variant?: "affiliation" | "system";
+}
 
 export function FriendOrbit({
   anchorTitle,
   friends,
   label = "FRIENDS",
   variant = "affiliation",
-}) {
+}: FriendOrbitProps) {
   if (!friends.length) return null;
 
   return (
@@ -36,7 +44,7 @@ export function FriendOrbit({
               style={{
                 "--friend-delay": `${delay}s`,
                 "--friend-duration": `${ORBIT_DURATION_SECONDS}s`,
-              }}
+              } as CSSVariables}
             >
               <a
                 href={friend.href}

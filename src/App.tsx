@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { HeroState } from "./sections/IntroSection";
 import { SiteHeader } from "./components/SiteHeader";
 import { WorkLaunch } from "./components/WorkLaunch";
 import { useCursorAura } from "./hooks/useCursorAura";
@@ -14,7 +15,7 @@ import { WorksSection } from "./sections/WorksSection";
 
 export function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const shellRef = useRef(null);
+  const shellRef = useRef<HTMLDivElement>(null);
   const activeSection = useSectionTracking();
   const {
     launch,
@@ -28,7 +29,7 @@ export function App() {
 
   useCursorAura(shellRef);
 
-  const settleBootLoader = useCallback((mode = "ready") => {
+  const settleBootLoader = useCallback((mode: HeroState = "ready") => {
     const loader = document.getElementById("boot-loader");
     if (!loader || loader.dataset.state === "hidden") return;
 

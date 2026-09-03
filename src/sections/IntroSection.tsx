@@ -3,6 +3,26 @@ import { ArrowDown } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
 import { clamp, lerp, smoothstep } from "../lib/math";
 
+export type HeroState = "ready" | "fallback";
+
+interface IntroSectionProps {
+  onSettled: (mode: HeroState) => void;
+}
+
+interface IntroCanvasProps {
+  onSettled?: (mode: HeroState) => void;
+}
+
+interface HeroUniforms {
+  crop: WebGLUniformLocation;
+  anchor: WebGLUniformLocation;
+  texel: WebGLUniformLocation;
+  zoom: WebGLUniformLocation;
+  morph: WebGLUniformLocation;
+  backgroundAlpha: WebGLUniformLocation;
+  brightness: WebGLUniformLocation;
+}
+
 const HERO_SOURCES = {
   mobile: "/images/optimized/pc-960.webp",
   tablet: "/images/optimized/pc-1600.webp",
@@ -15,7 +35,7 @@ const HERO_COPY = {
   full: "Beyond the period, a future yet unseen.",
 };
 
-function getHeroSource() {
+function getHeroSource(): string {
   if (window.innerWidth <= 600) return HERO_SOURCES.mobile;
   if (window.innerWidth <= 1200) return HERO_SOURCES.tablet;
   return HERO_SOURCES.desktop;
@@ -93,8 +113,13 @@ const FRAGMENT_SHADER_SOURCE = `#version 300 es
   }
 `;
 
-function createShader(gl, type, source) {
-  const shader = gl.createShader(type);
+function requireWebGLResource<T>(resource: T | null, label: string): T {
+  if (resource === null) throw new Error(`Hero WebGL resource unavailable: ${label}.`);
+  return resource;
+}
+
+function createShader(gl: WebGL2RenderingContext, type: number, source: string) {
+  const shader = requireWebGLResource(gl.createShader(type), "shader");
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
 
@@ -107,10 +132,10 @@ function createShader(gl, type, source) {
   return shader;
 }
 
-function createHeroProgram(gl) {
+function createHeroProgram(gl: WebGL2RenderingContext) {
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SOURCE);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
-  const program = gl.createProgram();
+  const program = requireWebGLResource(gl.createProgram(), "program");
 
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
@@ -127,8 +152,8 @@ function createHeroProgram(gl) {
   return program;
 }
 
-function IntroCanvas({ onSettled }) {
-  const canvasRef = useRef(null);
+function IntroCanvas({ onSettled }: IntroCanvasProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -161,14 +186,14 @@ function IntroCanvas({ onSettled }) {
     let lastWidth = 0;
     let lastHeight = 0;
     let lastDensity = 0;
-    let program;
-    let positionBuffer;
-    let imageTexture;
-    let maskTexture;
-    let uniforms;
+    let program: WebGLProgram | null = null;
+    let positionBuffer: WebGLBuffer | null = null;
+    let imageTexture: WebGLTexture | null = null;
+    let maskTexture: WebGLTexture | null = null;
+    let uniforms: HeroUniforms | null = null;
     let didSettle = false;
 
-    const settle = (mode) => {
+    const settle = (mode: HeroState) => {
       if (cancelled || didSettle) return;
       didSettle = true;
       onSettled?.(mode);
@@ -180,7 +205,7 @@ function IntroCanvas({ onSettled }) {
       settle("fallback");
     };
 
-    const uploadTexture = (texture, source) => {
+    const uploadTexture = (texture: WebGLTexture, source: TexImageSource) => {
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -190,7 +215,8 @@ function IntroCanvas({ onSettled }) {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
     };
 
-    const updateCrop = (width, height) => {
+    const updateCrop = (width: number, height: number) => {
+      if (!uniforms) return;
       const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
       const sourceWidth = width / scale;
       const sourceHeight = height / scale;
@@ -214,7 +240,8 @@ function IntroCanvas({ onSettled }) {
       );
     };
 
-    const sizeSurfaces = (width, height, density) => {
+    const sizeSurfaces = (width: number, height: number, density: number) => {
+      if (!maskTexture || !uniforms) return;
       if (width === lastWidth && height === lastHeight && density === lastDensity) return;
 
       const pixelWidth = Math.round(width * density);
@@ -290,8 +317,8 @@ function IntroCanvas({ onSettled }) {
       lastProgress = -1;
     };
 
-    const draw = (progress) => {
-      if (cancelled || !ready) return;
+    const draw = (progress: number) => {
+      if (cancelled || !ready || !uniforms) return;
 
       const rect = canvas.getBoundingClientRect();
       const width = rect.width;
@@ -339,35 +366,44 @@ function IntroCanvas({ onSettled }) {
     image.src = getHeroSource();
     image.onload = async () => {
       try {
-        program = createHeroProgram(gl);
-        positionBuffer = gl.createBuffer();
-        imageTexture = gl.createTexture();
-        maskTexture = gl.createTexture();
-        uniforms = {
-          crop: gl.getUniformLocation(program, "uCrop"),
-          anchor: gl.getUniformLocation(program, "uAnchor"),
-          texel: gl.getUniformLocation(program, "uTexel"),
-          zoom: gl.getUniformLocation(program, "uZoom"),
-          morph: gl.getUniformLocation(program, "uMorph"),
-          backgroundAlpha: gl.getUniformLocation(program, "uBackgroundAlpha"),
-          brightness: gl.getUniformLocation(program, "uBrightness"),
+        const nextProgram = createHeroProgram(gl);
+        const nextPositionBuffer = requireWebGLResource(gl.createBuffer(), "position buffer");
+        const nextImageTexture = requireWebGLResource(gl.createTexture(), "image texture");
+        const nextMaskTexture = requireWebGLResource(gl.createTexture(), "mask texture");
+        const nextUniforms: HeroUniforms = {
+          crop: requireWebGLResource(gl.getUniformLocation(nextProgram, "uCrop"), "uCrop"),
+          anchor: requireWebGLResource(gl.getUniformLocation(nextProgram, "uAnchor"), "uAnchor"),
+          texel: requireWebGLResource(gl.getUniformLocation(nextProgram, "uTexel"), "uTexel"),
+          zoom: requireWebGLResource(gl.getUniformLocation(nextProgram, "uZoom"), "uZoom"),
+          morph: requireWebGLResource(gl.getUniformLocation(nextProgram, "uMorph"), "uMorph"),
+          backgroundAlpha: requireWebGLResource(
+            gl.getUniformLocation(nextProgram, "uBackgroundAlpha"),
+            "uBackgroundAlpha",
+          ),
+          brightness: requireWebGLResource(gl.getUniformLocation(nextProgram, "uBrightness"), "uBrightness"),
         };
 
-        gl.useProgram(program);
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.useProgram(nextProgram);
+        gl.bindBuffer(gl.ARRAY_BUFFER, nextPositionBuffer);
         gl.bufferData(
           gl.ARRAY_BUFFER,
           new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
           gl.STATIC_DRAW,
         );
-        const position = gl.getAttribLocation(program, "aPosition");
+        const position = gl.getAttribLocation(nextProgram, "aPosition");
         gl.enableVertexAttribArray(position);
         gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
         gl.activeTexture(gl.TEXTURE0);
-        uploadTexture(imageTexture, image);
-        gl.uniform1i(gl.getUniformLocation(program, "uImage"), 0);
-        gl.uniform1i(gl.getUniformLocation(program, "uMask"), 1);
+        uploadTexture(nextImageTexture, image);
+        gl.uniform1i(requireWebGLResource(gl.getUniformLocation(nextProgram, "uImage"), "uImage"), 0);
+        gl.uniform1i(requireWebGLResource(gl.getUniformLocation(nextProgram, "uMask"), "uMask"), 1);
+
+        program = nextProgram;
+        positionBuffer = nextPositionBuffer;
+        imageTexture = nextImageTexture;
+        maskTexture = nextMaskTexture;
+        uniforms = nextUniforms;
 
         await heroFontReady;
         if (cancelled) return;
@@ -415,7 +451,7 @@ function IntroCanvas({ onSettled }) {
   );
 }
 
-export function IntroSection({ onSettled }) {
+export function IntroSection({ onSettled }: IntroSectionProps) {
   return (
     <section className="intro-section" id="intro" aria-labelledby="intro-title">
       <div className="intro-stage">

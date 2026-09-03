@@ -1,7 +1,12 @@
 import { works } from "../data/portfolio";
+import type { WorkLaunchState } from "../types/portfolio";
 import { ResponsiveImage } from "./ResponsiveImage";
 
-export function WorkLaunch({ launch }) {
+interface WorkLaunchProps {
+  launch: WorkLaunchState | null;
+}
+
+export function WorkLaunch({ launch }: WorkLaunchProps) {
   if (!launch) return null;
 
   const work = works[launch.index];

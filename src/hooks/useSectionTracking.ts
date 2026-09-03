@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { sections } from "../data/portfolio";
 
 export function useSectionTracking() {
-  const [active, setActive] = useState("intro");
+  const [active, setActive] = useState<string>("intro");
 
   useEffect(() => {
     const observed = sections
       .map(([id]) => document.getElementById(id))
-      .filter(Boolean);
+      .filter((element): element is HTMLElement => element !== null);
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries

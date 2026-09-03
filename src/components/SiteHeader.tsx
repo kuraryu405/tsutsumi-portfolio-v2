@@ -1,7 +1,14 @@
 import { List, X } from "@phosphor-icons/react";
+import type { Dispatch, SetStateAction } from "react";
 import { sections } from "../data/portfolio";
 
-export function SiteHeader({ active, menuOpen, setMenuOpen }) {
+interface SiteHeaderProps {
+  active: string;
+  menuOpen: boolean;
+  setMenuOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+export function SiteHeader({ active, menuOpen, setMenuOpen }: SiteHeaderProps) {
   const closeMenu = () => setMenuOpen(false);
 
   return (

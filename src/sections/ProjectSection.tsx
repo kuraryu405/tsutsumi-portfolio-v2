@@ -7,8 +7,15 @@ import {
 import { PageCount } from "../components/PageCount";
 import { ResponsiveImage } from "../components/ResponsiveImage";
 import { works } from "../data/portfolio";
+import type { CSSVariables, ProjectScrollBehavior } from "../types/portfolio";
 
-function ProjectRail({ activeIndex, sequence, onNavigate }) {
+interface ProjectRailProps {
+  activeIndex: number;
+  sequence: number[];
+  onNavigate: (index: number, behavior?: ProjectScrollBehavior) => void;
+}
+
+function ProjectRail({ activeIndex, sequence, onNavigate }: ProjectRailProps) {
   const activePosition = sequence.indexOf(activeIndex);
   const previousIndex = activePosition > 0 ? sequence[activePosition - 1] : null;
   const nextIndex =
@@ -22,7 +29,9 @@ function ProjectRail({ activeIndex, sequence, onNavigate }) {
         className="project-neighbor previous"
         type="button"
         disabled={!previous}
-        onClick={() => previous && onNavigate(previousIndex)}
+        onClick={() => {
+          if (previousIndex !== null) onNavigate(previousIndex);
+        }}
       >
         <ArrowLeft size={24} weight="bold" />
         {previous ? (
@@ -68,7 +77,7 @@ function ProjectRail({ activeIndex, sequence, onNavigate }) {
         className="project-neighbor next"
         type="button"
         onClick={() => {
-          if (next) onNavigate(nextIndex);
+          if (nextIndex !== null) onNavigate(nextIndex);
           else document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
         }}
       >
@@ -99,14 +108,26 @@ function ProjectRail({ activeIndex, sequence, onNavigate }) {
   );
 }
 
-export function ProjectSection({ progress, activeIndex, startIndex, onNavigate }) {
+interface ProjectSectionProps {
+  progress: number;
+  activeIndex: number;
+  startIndex: number;
+  onNavigate: (index: number, behavior?: ProjectScrollBehavior) => void;
+}
+
+export function ProjectSection({
+  progress,
+  activeIndex,
+  startIndex,
+  onNavigate,
+}: ProjectSectionProps) {
   const sequence = useMemo(
     () => works.map((_, position) => (startIndex + position) % works.length),
     [startIndex],
   );
 
   useEffect(() => {
-    const onKeyDown = (event) => {
+    const onKeyDown = (event: KeyboardEvent) => {
       const section = document.getElementById("project");
       if (!section) return;
 
@@ -134,11 +155,11 @@ export function ProjectSection({ progress, activeIndex, startIndex, onNavigate }
     const section = document.getElementById("project");
     if (!section) return undefined;
 
-    let touchStartY = null;
+    let touchStartY: number | null = null;
     let wheelDelta = 0;
     let wheelLocked = false;
 
-    const moveOneProject = (direction) => {
+    const moveOneProject = (direction: number) => {
       const rect = section.getBoundingClientRect();
       const isActive = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
       if (!isActive) return false;
@@ -156,11 +177,11 @@ export function ProjectSection({ progress, activeIndex, startIndex, onNavigate }
       return true;
     };
 
-    const onTouchStart = (event) => {
+    const onTouchStart = (event: TouchEvent) => {
       touchStartY = event.touches[0]?.clientY ?? null;
     };
 
-    const onTouchEnd = (event) => {
+    const onTouchEnd = (event: TouchEvent) => {
       if (touchStartY === null) return;
       const endY = event.changedTouches[0]?.clientY ?? touchStartY;
       const delta = touchStartY - endY;
@@ -169,7 +190,7 @@ export function ProjectSection({ progress, activeIndex, startIndex, onNavigate }
       else onNavigate(activeIndex);
     };
 
-    const onWheel = (event) => {
+    const onWheel = (event: WheelEvent) => {
       const rect = section.getBoundingClientRect();
       const isActive = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
       if (!isActive || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
@@ -204,7 +225,9 @@ export function ProjectSection({ progress, activeIndex, startIndex, onNavigate }
       className="project-scroll-section"
       id="project"
       aria-label="作品詳細"
-      style={{ "--project-height": `${(works.length + 1) * 100}svh` }}
+      style={{
+        "--project-height": `${(works.length + 1) * 100}svh`,
+      } as CSSVariables}
     >
       <div className="project-sticky">
         <div

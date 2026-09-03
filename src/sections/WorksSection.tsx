@@ -3,30 +3,37 @@ import { ArrowUpRight } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
 import { ResponsiveImage } from "../components/ResponsiveImage";
 import { works } from "../data/portfolio";
+import type { CSSVariables } from "../types/portfolio";
 
-function getOrbitDensity(itemCount) {
+function getOrbitDensity(itemCount: number) {
   if (itemCount <= 4) return "density-large";
   if (itemCount <= 6) return "density-medium";
   return "density-small";
 }
 
-export function WorksSection({ selected, setSelected, onOpen }) {
-  const fieldRef = useRef(null);
+interface WorksSectionProps {
+  selected: number;
+  setSelected: React.Dispatch<React.SetStateAction<number>>;
+  onOpen: (index: number, element?: Element | null) => void;
+}
+
+export function WorksSection({ selected, setSelected, onOpen }: WorksSectionProps) {
+  const fieldRef = useRef<HTMLDivElement>(null);
   const density = getOrbitDensity(works.length);
 
-  const moveField = (event) => {
+  const moveField = (event: React.PointerEvent<HTMLDivElement>) => {
     const rect = fieldRef.current?.getBoundingClientRect();
     if (!rect) return;
 
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
-    fieldRef.current.style.setProperty("--orbit-x", x.toFixed(3));
-    fieldRef.current.style.setProperty("--orbit-y", y.toFixed(3));
+    fieldRef.current?.style.setProperty("--orbit-x", x.toFixed(3));
+    fieldRef.current?.style.setProperty("--orbit-y", y.toFixed(3));
   };
 
   const resetField = () => {
-    fieldRef.current?.style.setProperty("--orbit-x", 0);
-    fieldRef.current?.style.setProperty("--orbit-y", 0);
+    fieldRef.current?.style.setProperty("--orbit-x", "0");
+    fieldRef.current?.style.setProperty("--orbit-y", "0");
   };
 
   return (
@@ -60,7 +67,10 @@ export function WorksSection({ selected, setSelected, onOpen }) {
           <button
             type="button"
             className={selected === index ? "orbit-node active" : "orbit-node"}
-            style={{ "--node-x": work.position[0], "--node-y": work.position[1] }}
+            style={{
+              "--node-x": work.position[0],
+              "--node-y": work.position[1],
+            } as CSSVariables}
             onMouseEnter={() => setSelected(index)}
             onFocus={() => setSelected(index)}
             onClick={(event) => {

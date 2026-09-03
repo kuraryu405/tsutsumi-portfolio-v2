@@ -1,10 +1,28 @@
-function getOptimizedPath(src, width, format) {
+import type { ImgHTMLAttributes } from "react";
+
+type ImageFormat = "avif" | "webp";
+
+interface ResponsiveImageProps
+  extends Omit<
+    ImgHTMLAttributes<HTMLImageElement>,
+    "src" | "width" | "height" | "loading" | "decoding"
+  > {
+  src: string;
+  width: number;
+  height: number;
+  widths?: number[];
+  sizes?: string;
+  loading?: "eager" | "lazy";
+  decoding?: "async" | "auto" | "sync";
+}
+
+function getOptimizedPath(src: string, width: number, format: ImageFormat) {
   const filename = src.split("/").pop();
   const stem = filename?.replace(/\.[^.]+$/, "");
   return `/images/optimized/${stem}-${width}.${format}`;
 }
 
-function getSrcSet(src, widths, format) {
+function getSrcSet(src: string, widths: number[], format: ImageFormat) {
   return widths
     .map((width) => `${getOptimizedPath(src, width, format)} ${width}w`)
     .join(", ");
@@ -19,7 +37,7 @@ export function ResponsiveImage({
   loading = "lazy",
   decoding = "async",
   ...props
-}) {
+}: ResponsiveImageProps) {
   if (!widths.length) {
     return (
       <img

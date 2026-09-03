@@ -56,24 +56,24 @@ function MobileFriends() {
 
 export function CommunitySection() {
   const [active, setActive] = useState(0);
-  const fieldRef = useRef(null);
+  const fieldRef = useRef<HTMLDivElement>(null);
   const independentFriends = mutualLinks.filter(
     (friend) => friend.orbit.type === "system",
   );
 
-  const moveField = (event) => {
+  const moveField = (event: React.PointerEvent<HTMLDivElement>) => {
     const rect = fieldRef.current?.getBoundingClientRect();
     if (!rect) return;
 
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
-    fieldRef.current.style.setProperty("--community-x", x.toFixed(3));
-    fieldRef.current.style.setProperty("--community-y", y.toFixed(3));
+    fieldRef.current?.style.setProperty("--community-x", x.toFixed(3));
+    fieldRef.current?.style.setProperty("--community-y", y.toFixed(3));
   };
 
   const resetField = () => {
-    fieldRef.current?.style.setProperty("--community-x", 0);
-    fieldRef.current?.style.setProperty("--community-y", 0);
+    fieldRef.current?.style.setProperty("--community-x", "0");
+    fieldRef.current?.style.setProperty("--community-y", "0");
   };
 
   return (
