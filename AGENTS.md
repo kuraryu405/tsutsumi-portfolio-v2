@@ -15,7 +15,7 @@ When implementing from a selected generated mock, treat that image as the source
 - The intro headline copy is “Beyond the period, a future yet unseen.” Visually connect the word “period” to the closing “.” as one continuous typographic gesture.
 - The intro uses the real `pc.webp` image across the full headline, then grows that same image into a rectangular full-screen background; do not use an ellipse or capsule reveal.
 - Works should feel magnetic and spatial, with large 16:10 landscape panels rather than small circular crops. Titles and descriptions must remain readable without zooming.
-- Works planets are the entrance for all works (up to ~12); orbit slots are computed on an ellipse so new works never need hand-placed coordinates, and density shrinks the planet cards as the count grows.
+- Works planets are the entrance for all works (up to ~12); every orbit slot is computed on an ellipse so works never declare coordinates, and density shrinks the planet cards as the count grows.
 - PROJECT is a single-screen exhibit, not a scroll-driven tour: one active 16:10 exhibit with wrap-around prev/next, keyboard arrows, a direct-jump ALL WORKS index, and a SKIP TO ABOUT exit. Section height stays constant no matter how many works exist.
 - Planet selection and exhibit-active work are separate states. Clicking any Works planet jumps straight to that project (launch animation included) without forcing a cyclic tour through the other works. Entering PROJECT directly keeps the current exhibit.
 - Hobby strips use hover preview plus click-to-lock on pointer devices and tap/swipe on touch devices.

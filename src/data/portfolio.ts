@@ -21,7 +21,6 @@ export const works: Work[] = [
     detailCopy: "今の自分を、次の自分へ渡す。",
     type: "Web design / Development",
     year: "2024",
-    position: ["29%", "22%"],
     focus: "50% 44%",
   },
   {
@@ -38,7 +37,6 @@ export const works: Work[] = [
     detailCopy: "聞けなかったこと、化けて聞こう。",
     type: "Web game / Full stack",
     year: "2024",
-    position: ["72%", "14%"],
     focus: "50% 50%",
   },
   {
@@ -55,7 +53,6 @@ export const works: Work[] = [
     detailCopy: "便利すぎる日常に、ひとつ無駄を。",
     type: "Web experiment",
     year: "2024",
-    position: ["80%", "66%"],
     focus: "50% 50%",
   },
   {
@@ -72,8 +69,23 @@ export const works: Work[] = [
     detailCopy: "解くほど、次に進みたくなる学習を。",
     type: "Learning support",
     year: "2025",
-    position: ["34%", "70%"],
     focus: "50% 48%",
+  },
+  {
+    slug: "prizgram",
+    featured: true,
+    href: "https://prizgram.kuraryu.jp/",
+    title: "Prizgram",
+    image: "/images/prizgram.png",
+    imageWidth: 1731,
+    imageHeight: 909,
+    imageWidths: [480, 960, 1600],
+    description:
+      "学内ハッカソンにてAI Agentを活用し、最優秀賞をいただいたWebアプリ。",
+    detailCopy: "選考を重ねるたびに、あなたを学習する就活パーソナルエージェント。",
+    type: "Web app / AI agent",
+    year: "2026",
+    focus: "50% 50%",
   },
 ];
 

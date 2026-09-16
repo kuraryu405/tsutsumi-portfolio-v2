@@ -20,7 +20,6 @@ export interface WorkCommon extends ImageAsset {
 
 export type FeaturedWork = WorkCommon & {
   featured: true;
-  position?: [string, string];
 };
 
 export type Work =

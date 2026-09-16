@@ -76,7 +76,7 @@ export function WorksSection({ selected, setSelected, onOpen }: WorksSectionProp
         </div>
         {orbitWorks.map((work, orbitIndex) => {
           const index = works.indexOf(work);
-          const [nodeX, nodeY] = work.position ?? getOrbitPosition(orbitIndex, orbitWorks.length);
+          const [nodeX, nodeY] = getOrbitPosition(orbitIndex, orbitWorks.length);
           return (
             <button
               type="button"
