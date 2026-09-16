@@ -14,9 +14,10 @@ When implementing from a selected generated mock, treat that image as the source
 - The intro's signature interaction is a scroll transition where imagery starts inside the headline letterforms and expands into the full background.
 - The intro headline copy is “Beyond the period, a future yet unseen.” Visually connect the word “period” to the closing “.” as one continuous typographic gesture.
 - The intro uses the real `pc.webp` image across the full headline, then grows that same image into a rectangular full-screen background; do not use an ellipse or capsule reveal.
-- Works should feel magnetic and spatial, but with four large 16:10 landscape panels rather than small circular crops. Titles and descriptions must remain readable without zooming.
-- A selected Works panel grows into a sticky, full-screen horizontal project sequence driven by normal vertical scrolling.
-- Clicking any Works planet starts a complete cyclic tour from that project (for example, 3 → 4 → 1 → 2), then continues to the next section; selecting a later project must not skip the earlier projects.
+- Works should feel magnetic and spatial, with large 16:10 landscape panels rather than small circular crops. Titles and descriptions must remain readable without zooming.
+- Works planets are the entrance for all works (up to ~12); orbit slots are computed on an ellipse so new works never need hand-placed coordinates, and density shrinks the planet cards as the count grows.
+- PROJECT is a single-screen exhibit, not a scroll-driven tour: one active 16:10 exhibit with wrap-around prev/next, keyboard arrows, a direct-jump ALL WORKS index, and a SKIP TO ABOUT exit. Section height stays constant no matter how many works exist.
+- Planet selection and exhibit-active work are separate states. Clicking any Works planet jumps straight to that project (launch animation included) without forcing a cyclic tour through the other works. Entering PROJECT directly keeps the current exhibit.
 - Hobby strips use hover preview plus click-to-lock on pointer devices and tap/swipe on touch devices.
 - Community cards, social rows, images, and supporting copy should be deliberately large; avoid microtype for meaningful content.
 - Keep the shared celestial language hierarchical: Works are large 16:10 exhibits navigated like a planetary tour, communities are the main orbiting planets, and mutual friend links are smaller readable satellites at the end of Community rather than plain footer text.

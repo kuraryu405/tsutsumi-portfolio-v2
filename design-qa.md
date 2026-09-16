@@ -2,6 +2,87 @@
 
 final result: passed
 
+## Pass 7 — Single-Screen Project Exhibit With Full Planet Orbit
+
+- Intentional redesign from Pass 6: the scroll-driven sticky tour is removed because its
+  `(works + 0.75) × 100svh` pinned height and forced cyclic tour do not scale past a few works.
+  PROJECT is now one active 16:10 exhibit with wrap-around prev/next, keyboard arrows, a
+  direct-jump ALL WORKS index, and a SKIP TO ABOUT exit. Section height is constant
+  regardless of work count. Works planets show all works on computed ellipse slots
+  (hand-placed coordinates kept as override), so new works need no layout work.
+- Browser-rendered implementation (headless Chrome, this pass):
+  - Desktop 1440 × 900: Works orbit with four planets, PROJECT exhibit, pager, and index.
+  - Mobile 390 × 844: two-column planet grid, tapped planet 3 jumps straight to
+    `project-long-long-url`, exhibit media cover-fits, opaque copy panel, no horizontal overflow.
+- States tested:
+  - Pager next/prev with wrap-around (`portfolio → happa → long-long-url`, last → first).
+  - Index direct jump to any work without passing through the others.
+  - Keyboard ArrowLeft/Right wrap-around while PROJECT is in view.
+  - Planet tap launches directly to that project; launch overlay clears afterwards.
+  - Reduced-motion path keeps the instant-scroll handoff and static exhibit.
+- Comparison history:
+  - P1 exhibit image crop: the exhibit image rendered at natural size (zoomed top-left crop)
+    because `ResponsiveImage` wraps `img` in `picture` while the CSS used a `> img` child
+    selector, so `object-fit: cover` never applied. Fix: `picture` selectors added to the
+    `.project-card-media` fill rules. Post-fix evidence: desktop and mobile screenshots above.
+- No actionable P0, P1, or P2 issues remain in this pass.
+- Non-blocking P3 notes: unused `StackSequence` component/CSS remains for a later cleanup;
+  initial planet selection (Happa) and exhibit (Portfolio) intentionally differ as before;
+  clicking the active index item is a no-op.
+
+## Pass 6 — Native Vertical Three-Depth Project Stack
+
+- Source visual truth:
+  - `design-reference/source-desktop-top.png` — existing 1280 × 720 desktop opening reference.
+  - `design-reference/source-desktop.png` — existing 1440 px full-page desktop reference.
+  - `design-reference/source-mobile.png` — existing 390 × 844 mobile reference.
+  - The current task brief and updated `AGENTS.md` are authoritative for the intentional redesign: representative Works planets, native vertical scrolling, 16:10 project exhibits, three depth layers, and an opaque mobile copy panel. The supplied reference captures predate this stack and therefore were used for shared asset/content context rather than as a pixel-identical card-layout target.
+- Browser-rendered implementation:
+  - `qa-v5/works-1280.png`
+  - `qa-v5/stack-first-1280.png`
+  - `qa-v5/stack-second-1280.png`
+  - `qa-v5/stack-final-1280.png`
+  - `qa-v5/about-exit-1280.png`
+  - `qa-v5/stack-first-1440.png`
+  - `qa-v5/stack-second-1440.png`
+  - `qa-v5/stack-first-mobile.png`
+  - `qa-v5/stack-second-mobile.png`
+  - `qa-v5/stack-long-title-mobile.png`
+- Combined comparison inputs opened and inspected:
+  - `qa-v5/compare-entry-desktop.png` — source desktop opening beside the Works entry.
+  - `qa-v5/compare-stack-desktop.png` — source desktop opening beside the desktop stack state.
+  - `qa-v5/compare-mobile.png` — source mobile opening beside the mobile stack state.
+- Viewports and density:
+  - Desktop browser and screenshot viewports: 1280 × 720 and 1440 × 900; device pixel ratio: 1.
+  - Mobile browser and screenshot viewport: 390 × 844; device pixel ratio: 1.
+  - Source comparison inputs use the same 1280 × 720 and 390 × 844 dimensions. The 1440 × 2880 source is a full-page reference, not a 1:1 card crop.
+- States tested:
+  - Works representative orbit with four featured works and the selected Happa entry.
+  - First card, second-card overlap, final card, and exit from the last card to About.
+  - All four planet launches, preserving cyclic sequences `0 → 1 → 2 → 3`, `1 → 2 → 3 → 0`, `2 → 3 → 0 → 1`, and `3 → 0 → 1 → 2`.
+  - Direct PROJECT navigation resetting to the original work order.
+  - Mobile long-title wrapping and the opaque copy panel.
+- Full-view comparison:
+  - The implementation keeps the black/warm-paper field, supplied work imagery, violet/coral accents, and the current oversized typographic hierarchy while changing the project detail interaction to the requested vertical stack.
+  - Desktop cards remain 16:10 cinema panels; the active card is readable at 1280 × 720 and 1440 × 900, with the preceding heading bands and the next-card continuation cue visible.
+  - Mobile keeps the image at 16:10, separates copy into an opaque lower panel, grows for content, and shows the next card edge without horizontal overflow.
+- Focused comparison:
+  - Measured desktop card sizes were approximately 876.8 × 548 px at 1280 × 720 and 1164.8 × 728 px at 1440 × 900.
+  - The mobile media region measured 348 × 217.5 px; the longest title wrapped inside its card with no clipping.
+  - The planet morph captured the source image rectangle, measured the landing media rectangle after the stack moved into place, and completed without leaving an overlay behind.
+- Required fidelity surfaces:
+  - Fonts, work copy, years, types, authentic images, image focal positions, external links, and `OPEN SITE` labels remain unchanged.
+  - The navigation is an opaque previous/next control with a numeric count only; the old thumbnail rail and horizontal track are absent.
+  - The document had zero horizontal overflow at all target viewports. No wheel/touch `preventDefault`, forced snap, or horizontal track remains in the stack path.
+- Accessibility and interaction:
+  - The stack follows the tour order in the DOM and heading structure. In motion mode only the active card is exposed to assistive technology; reduced-motion renders every card in a normal vertical list.
+  - No project `aria-live` announcement is emitted during scroll. Buttons, left/right keys, PROJECT navigation, planet launches, and external links were exercised.
+  - A fresh browser tab after the final reload reported no console errors or warnings.
+- Comparison history:
+  - P2 mobile continuation cue: the first implementation positioned the next card from its full content height, making too much of the following card visible. Fix: anchor the cue to the viewport bottom (`100svh`) so only the intended edge remains. Post-fix evidence: `qa-v5/stack-first-mobile.png` and `qa-v5/stack-second-mobile.png`.
+  - P2 shared-image landing measurement: inherited smooth scrolling could leave the card target in motion when the destination rectangle was measured. Fix: use a temporary instant-scroll path for the morph capture/landing handoff. Post-fix evidence: `qa-v5/stack-first-1440.png`, `qa-v5/stack-second-1440.png`, and the four completed planet-launch checks.
+- No actionable P0, P1, or P2 issues remain in this pass.
+
 ## Pass 5 — Accelerated Intro and Simplified Social Rows
 
 - Source visual truth:

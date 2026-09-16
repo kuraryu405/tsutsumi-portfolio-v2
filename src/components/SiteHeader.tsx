@@ -6,9 +6,15 @@ interface SiteHeaderProps {
   active: string;
   menuOpen: boolean;
   setMenuOpen: Dispatch<SetStateAction<boolean>>;
+  onProjectNavigate?: () => void;
 }
 
-export function SiteHeader({ active, menuOpen, setMenuOpen }: SiteHeaderProps) {
+export function SiteHeader({
+  active,
+  menuOpen,
+  setMenuOpen,
+  onProjectNavigate,
+}: SiteHeaderProps) {
   const closeMenu = () => setMenuOpen(false);
 
   return (
@@ -31,7 +37,10 @@ export function SiteHeader({ active, menuOpen, setMenuOpen }: SiteHeaderProps) {
             href={`#${id}`}
             className={active === id ? "active" : ""}
             key={id}
-            onClick={closeMenu}
+            onClick={() => {
+              closeMenu();
+              if (id === "project") onProjectNavigate?.();
+            }}
           >
             {label}
           </a>

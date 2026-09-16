@@ -20,11 +20,12 @@ export function App() {
   const {
     launch,
     launchProject,
-    projectProgress,
-    projectStartIndex,
-    scrollToProject,
-    selectedWork,
-    setSelectedWork,
+    planetSelection,
+    projectSequence,
+    resetProjectSequence,
+    setPlanetSelection,
+    setStackActiveIndex,
+    stackActiveIndex,
   } = useProjectNavigation();
 
   useCursorAura(shellRef);
@@ -59,20 +60,20 @@ export function App() {
         active={activeSection}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
+        onProjectNavigate={resetProjectSequence}
       />
       <main>
         <IntroSection onSettled={settleBootLoader} />
         <ProfileSection />
         <WorksSection
-          selected={selectedWork}
-          setSelected={setSelectedWork}
+          selected={planetSelection}
+          setSelected={setPlanetSelection}
           onOpen={launchProject}
         />
         <ProjectSection
-          progress={projectProgress}
-          activeIndex={selectedWork}
-          startIndex={projectStartIndex}
-          onNavigate={scrollToProject}
+          activeIndex={stackActiveIndex}
+          sequence={projectSequence}
+          onActiveChange={setStackActiveIndex}
         />
         <AboutSection />
         <CommunitySection />

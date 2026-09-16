@@ -10,20 +10,23 @@ export function WorkLaunch({ launch }: WorkLaunchProps) {
   if (!launch) return null;
 
   const work = works[launch.index];
-  const frame = launch.open
-    ? { top: 0, left: 0, width: "100vw", height: "100vh", borderRadius: 0 }
-    : {
-        top: launch.rect.top,
-        left: launch.rect.left,
-        width: launch.rect.width,
-        height: launch.rect.height,
-        borderRadius: 14,
-      };
+  const rect = launch.phase === "landing" && launch.landingRect
+    ? launch.landingRect
+    : launch.startRect;
+  const borderRadius = launch.phase === "landing"
+    ? launch.landingRadius
+    : launch.startRadius;
 
   return (
     <div
-      className={launch.open ? "work-launch open" : "work-launch"}
-      style={frame}
+      className={`work-launch ${launch.phase}`}
+      style={{
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        borderRadius,
+      }}
       aria-hidden="true"
     >
       <ResponsiveImage
@@ -36,7 +39,6 @@ export function WorkLaunch({ launch }: WorkLaunchProps) {
         alt=""
         style={{ objectPosition: work.focus }}
       />
-      <span>{work.title}</span>
     </div>
   );
 }

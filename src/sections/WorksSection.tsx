@@ -7,8 +7,17 @@ import type { CSSVariables } from "../types/portfolio";
 
 function getOrbitDensity(itemCount: number) {
   if (itemCount <= 4) return "density-large";
-  if (itemCount <= 6) return "density-medium";
+  if (itemCount <= 8) return "density-medium";
   return "density-small";
+}
+
+function getOrbitPosition(index: number, total: number): [string, string] {
+  if (total <= 1) return ["50%", "46%"];
+  const step = 360 / total;
+  const angle = ((-90 - 180 / total + index * step) * Math.PI) / 180;
+  const x = 50 + 34 * Math.cos(angle);
+  const y = 50 + 36 * Math.sin(angle);
+  return [`${x.toFixed(2)}%`, `${y.toFixed(2)}%`];
 }
 
 interface WorksSectionProps {
@@ -19,7 +28,9 @@ interface WorksSectionProps {
 
 export function WorksSection({ selected, setSelected, onOpen }: WorksSectionProps) {
   const fieldRef = useRef<HTMLDivElement>(null);
-  const density = getOrbitDensity(works.length);
+  const orbitWorks = works;
+  const selectedWork = works[selected] ?? orbitWorks[0];
+  const density = getOrbitDensity(orbitWorks.length);
 
   const moveField = (event: React.PointerEvent<HTMLDivElement>) => {
     const rect = fieldRef.current?.getBoundingClientRect();
@@ -60,48 +71,52 @@ export function WorksSection({ selected, setSelected, onOpen }: WorksSectionProp
         <div className="orbit-ring ring-one" aria-hidden="true" />
         <div className="orbit-ring ring-two" aria-hidden="true" />
         <div className="orbit-core" aria-hidden="true">
-          <span>4 BUILDS</span>
+          <span>{orbitWorks.length} BUILDS</span>
           <small>SELECT A PROJECT</small>
         </div>
-        {works.map((work, index) => (
-          <button
-            type="button"
-            className={selected === index ? "orbit-node active" : "orbit-node"}
-            style={{
-              "--node-x": work.position[0],
-              "--node-y": work.position[1],
-            } as CSSVariables}
-            onMouseEnter={() => setSelected(index)}
-            onFocus={() => setSelected(index)}
-            onClick={(event) => {
-              setSelected(index);
-              onOpen(index, event.currentTarget);
-            }}
-            key={work.slug}
-            aria-label={`${work.title}の詳細を見る`}
-          >
-            <span className="node-image">
-              <ResponsiveImage
-                src={work.image}
-                width={work.imageWidth}
-                height={work.imageHeight}
-                widths={work.imageWidths}
-                sizes="(max-width: 760px) 46vw, 20vw"
-                alt=""
-                style={{ objectPosition: work.focus }}
-              />
-            </span>
-            <span className="node-copy">
-              <strong>{work.title}</strong>
-              <small>{work.type}</small>
-            </span>
-          </button>
-        ))}
+        {orbitWorks.map((work, orbitIndex) => {
+          const index = works.indexOf(work);
+          const [nodeX, nodeY] = work.position ?? getOrbitPosition(orbitIndex, orbitWorks.length);
+          return (
+            <button
+              type="button"
+              className={selected === index ? "orbit-node active" : "orbit-node"}
+              style={{
+                "--node-x": nodeX,
+                "--node-y": nodeY,
+              } as CSSVariables}
+              onMouseEnter={() => setSelected(index)}
+              onFocus={() => setSelected(index)}
+              onClick={(event) => {
+                setSelected(index);
+                onOpen(index, event.currentTarget);
+              }}
+              key={work.slug}
+              aria-label={`${work.title}の詳細を見る`}
+            >
+              <span className="node-image">
+                <ResponsiveImage
+                  src={work.image}
+                  width={work.imageWidth}
+                  height={work.imageHeight}
+                  widths={work.imageWidths}
+                  sizes="(max-width: 760px) 46vw, 20vw"
+                  alt=""
+                  style={{ objectPosition: work.focus }}
+                />
+              </span>
+              <span className="node-copy">
+                <strong>{work.title}</strong>
+                <small>{work.type}</small>
+              </span>
+            </button>
+          );
+        })}
       </div>
-      <div className="work-readout" aria-live="polite">
-        <span>ACTIVE / 0{selected + 1}</span>
-        <strong>{works[selected].title}</strong>
-        <p>{works[selected].description}</p>
+      <div className="work-readout">
+        <span>ACTIVE / {String(selected + 1).padStart(2, "0")}</span>
+        <strong>{selectedWork.title}</strong>
+        <p>{selectedWork.description}</p>
         <button type="button" onClick={() => onOpen(selected)}>
           VIEW PROJECT <ArrowUpRight size={18} weight="bold" />
         </button>

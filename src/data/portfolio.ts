@@ -10,6 +10,7 @@ import type {
 export const works: Work[] = [
   {
     slug: "portfolio",
+    featured: true,
     href: "https://kuraryu.jp",
     title: "Portfolio",
     image: "/images/portfolio.png",
@@ -25,6 +26,7 @@ export const works: Work[] = [
   },
   {
     slug: "happa",
+    featured: true,
     href: "https://kuraryu.jp/Happa",
     title: "Happa",
     image: "/images/Happalogo.png",
@@ -41,6 +43,7 @@ export const works: Work[] = [
   },
   {
     slug: "long-long-url",
+    featured: true,
     href: "https://kuraryu.jp/long-long-url",
     title: "long-long-url",
     image: "/images/longurl.png",
@@ -57,6 +60,7 @@ export const works: Work[] = [
   },
   {
     slug: "iniad-quest",
+    featured: true,
     href: "https://kuraryu.jp/iniad-quest/",
     title: "INIAD Quest",
     image: "/images/INIAD-Quest.jpg",

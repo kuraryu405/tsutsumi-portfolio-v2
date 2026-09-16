@@ -7,7 +7,7 @@ export interface ImageAsset {
   imageWidths: number[];
 }
 
-export interface Work extends ImageAsset {
+export interface WorkCommon extends ImageAsset {
   slug: string;
   href: string;
   title: string;
@@ -15,9 +15,20 @@ export interface Work extends ImageAsset {
   detailCopy: string;
   type: string;
   year: string;
-  position: [string, string];
   focus: string;
 }
+
+export type FeaturedWork = WorkCommon & {
+  featured: true;
+  position?: [string, string];
+};
+
+export type Work =
+  | FeaturedWork
+  | (WorkCommon & {
+      featured: false;
+      position?: never;
+    });
 
 export interface Hobby extends ImageAsset {
   title: string;
@@ -56,10 +67,15 @@ export type SectionNavigationItem = [id: string, label: string];
 
 export type ProjectScrollBehavior = ScrollBehavior | "instant";
 
+export type WorkLaunchPhase = "captured" | "landing";
+
 export interface WorkLaunchState {
   index: number;
-  rect: DOMRect;
-  open: boolean;
+  startRect: DOMRect;
+  landingRect: DOMRect | null;
+  startRadius: string;
+  landingRadius: string;
+  phase: WorkLaunchPhase;
 }
 
 export type CSSVariables = CSSProperties & Record<`--${string}`, string | number>;
