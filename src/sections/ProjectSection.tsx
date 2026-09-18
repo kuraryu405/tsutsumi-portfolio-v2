@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
 import { ResponsiveImage } from "../components/ResponsiveImage";
 import { works } from "../data/portfolio";
+import { focusSection, getScrollBehavior } from "../lib/navigation";
 
 interface ProjectSectionProps {
   activeIndex: number;
@@ -15,7 +16,11 @@ export function ProjectSection({
   sequence,
   onActiveChange,
 }: ProjectSectionProps) {
-  const order = sequence.length ? sequence : works.map((_, index) => index);
+  const indexRef = useRef<HTMLDialogElement>(null);
+  const order = useMemo(
+    () => sequence.length ? sequence : works.map((_, index) => index),
+    [sequence],
+  );
   const activePosition = Math.max(0, order.indexOf(activeIndex));
   const safePosition = Number.isFinite(activePosition) && activePosition >= 0
     ? activePosition
@@ -25,14 +30,16 @@ export function ProjectSection({
   const work = works[currentWorkIndex];
   const workNumber = String(currentWorkIndex + 1).padStart(2, "0");
 
-  const goToPosition = (position: number) => {
+  const goToPosition = useCallback((position: number) => {
     const next = order[(position + total) % total];
     if (next !== undefined) onActiveChange(next);
-  };
+  }, [order, total, onActiveChange]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (document.querySelector("dialog[open]") || document.querySelector("main")?.inert) return;
       const target = event.target as HTMLElement | null;
       if (
         target?.isContentEditable ||
@@ -59,8 +66,7 @@ export function ProjectSection({
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [safePosition, total, order.join(",")]);
+  }, [safePosition, goToPosition]);
 
   if (!work) return null;
 
@@ -69,6 +75,7 @@ export function ProjectSection({
       className="viewport-section project-section"
       id="project"
       aria-label="作品詳細"
+      tabIndex={-1}
     >
       <div className="section-topline">
         <span>04 / PROJECT FOCUS</span>
@@ -83,7 +90,6 @@ export function ProjectSection({
           className="project-card project-exhibit-card"
           id={`project-${work.slug}`}
           aria-labelledby={`project-title-${work.slug}`}
-          key={work.slug}
         >
           <div className="project-card-media project-exhibit-media">
             <ResponsiveImage
@@ -113,6 +119,17 @@ export function ProjectSection({
           </div>
         </article>
 
+      </div>
+
+      <div className="project-controls">
+        <button
+          type="button"
+          className="project-index-toggle"
+          aria-haspopup="dialog"
+          onClick={() => indexRef.current?.showModal()}
+        >
+          ALL WORKS / INDEX
+        </button>
         <nav className="project-pager" aria-label="作品ナビゲーション">
           <button
             className="project-nav-button"
@@ -138,11 +155,26 @@ export function ProjectSection({
             <ArrowRight size={20} weight="bold" />
           </button>
         </nav>
+        <button
+          type="button"
+          className="project-skip"
+          onClick={() => {
+            document.getElementById("about")?.scrollIntoView({ behavior: getScrollBehavior() });
+            focusSection("about");
+          }}
+        >
+          SKIP TO ABOUT ↓
+        </button>
       </div>
 
-      <div className="project-index">
+      <dialog ref={indexRef} className="project-index" aria-labelledby="project-index-title">
+        <div className="project-index-heading">
+          <h3 id="project-index-title">ALL WORKS / INDEX</h3>
+          <button type="button" onClick={() => indexRef.current?.close()} aria-label="作品一覧を閉じる">
+            CLOSE ×
+          </button>
+        </div>
         <p className="project-index-label">
-          <span>ALL WORKS / INDEX</span>
           <span>惑星以外からも直接ジャンプできます</span>
         </p>
         <ul>
@@ -158,6 +190,9 @@ export function ProjectSection({
                   aria-current={isActive ? "true" : undefined}
                   onClick={() => {
                     if (!isActive) onActiveChange(workIndex);
+                    indexRef.current?.close();
+                    document.getElementById("project")?.scrollIntoView({ behavior: getScrollBehavior() });
+                    focusSection("project");
                   }}
                 >
                   <span>{String(position + 1).padStart(2, "0")}</span>
@@ -168,15 +203,7 @@ export function ProjectSection({
             );
           })}
         </ul>
-        <button
-          type="button"
-          className="project-skip"
-          onClick={() =>
-            document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
-        >
-          SKIP TO ABOUT ↓
-        </button>
-      </div>
+      </dialog>
 
       <PageCount current={4} />
     </section>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { works } from "../data/portfolio";
+import { focusSection, getScrollBehavior } from "../lib/navigation";
 import type { ProjectScrollBehavior, WorkLaunchState } from "../types/portfolio";
 
 function prefersReducedMotion() {
@@ -7,7 +8,7 @@ function prefersReducedMotion() {
 }
 
 function getNativeScrollBehavior(behavior: ProjectScrollBehavior): ScrollBehavior {
-  return behavior === "instant" ? "auto" : behavior;
+  return behavior === "instant" || prefersReducedMotion() ? "auto" : behavior;
 }
 
 function getRectRadius(element: Element) {
@@ -58,6 +59,7 @@ export function useProjectNavigation() {
 
       const top = getProjectTop();
       if (top === null) return;
+      focusSection("project");
       if (behavior === "instant") {
         scrollInstant(top);
       } else {
@@ -82,7 +84,7 @@ export function useProjectNavigation() {
       const source = element?.querySelector<HTMLElement>(".node-image");
       if (!source || prefersReducedMotion()) {
         setLaunch(null);
-        scrollToProject(index, "smooth");
+        scrollToProject(index, getScrollBehavior());
         return;
       }
 

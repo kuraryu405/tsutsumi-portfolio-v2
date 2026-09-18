@@ -8,15 +8,17 @@ export function useSectionTracking() {
     const observed = sections
       .map(([id]) => document.getElementById(id))
       .filter((element): element is HTMLElement => element !== null);
+    const visibility = new Map<Element, IntersectionObserverEntry>();
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
+        entries.forEach((entry) => visibility.set(entry.target, entry));
+        const visible = Array.from(visibility.values())
           .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          .sort((a, b) => b.intersectionRect.height - a.intersectionRect.height);
 
         if (visible[0]) setActive(visible[0].target.id);
       },
-      { threshold: [0.22, 0.45, 0.7] },
+      { threshold: Array.from({ length: 21 }, (_, index) => index / 20) },
     );
 
     observed.forEach((element) => observer.observe(element));

@@ -419,6 +419,14 @@ function IntroCanvas({ onSettled }: IntroCanvasProps) {
     };
     image.onerror = () => useFallback(true);
 
+    const onContextLost = () => {
+      ready = false;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      useFallback();
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
+
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
 
@@ -427,6 +435,7 @@ function IntroCanvas({ onSettled }: IntroCanvasProps) {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      canvas.removeEventListener("webglcontextlost", onContextLost);
       image.onload = null;
       image.onerror = null;
       if (positionBuffer) gl.deleteBuffer(positionBuffer);
