@@ -1,23 +1,15 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { PageCount } from "../components/PageCount";
 import { ResponsiveImage } from "../components/ResponsiveImage";
 import { works } from "../data/portfolio";
+import { getOrbitCardWidth, getOrbitPosition } from "../lib/orbit";
 import type { CSSVariables } from "../types/portfolio";
 
 function getOrbitDensity(itemCount: number) {
   if (itemCount <= 4) return "density-large";
   if (itemCount <= 8) return "density-medium";
   return "density-small";
-}
-
-function getOrbitPosition(index: number, total: number): [string, string] {
-  if (total <= 1) return ["50%", "46%"];
-  const step = 360 / total;
-  const angle = ((-90 - 180 / total + index * step) * Math.PI) / 180;
-  const x = 50 + 34 * Math.cos(angle);
-  const y = 50 + 36 * Math.sin(angle);
-  return [`${x.toFixed(2)}%`, `${y.toFixed(2)}%`];
 }
 
 interface WorksSectionProps {
@@ -31,6 +23,17 @@ export function WorksSection({ selected, setSelected, onOpen }: WorksSectionProp
   const orbitWorks = works;
   const selectedWork = works[selected] ?? orbitWorks[0];
   const density = getOrbitDensity(orbitWorks.length);
+
+  useEffect(() => {
+    const field = fieldRef.current;
+    if (!field) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      field.style.setProperty("--orbit-card-width", `${getOrbitCardWidth(orbitWorks.length, width, height)}px`);
+    });
+    observer.observe(field);
+    return () => observer.disconnect();
+  }, [orbitWorks.length]);
 
   const moveField = (event: React.PointerEvent<HTMLDivElement>) => {
     const rect = fieldRef.current?.getBoundingClientRect();
@@ -63,7 +66,7 @@ export function WorksSection({ selected, setSelected, onOpen }: WorksSectionProp
         考えた跡。
       </h2>
       <div
-        className={`orbit-field ${density}`}
+        className={`orbit-field ${density}${orbitWorks.length >= 6 ? " compact-orbit" : ""}`}
         ref={fieldRef}
         onPointerMove={moveField}
         onPointerLeave={resetField}
@@ -82,8 +85,8 @@ export function WorksSection({ selected, setSelected, onOpen }: WorksSectionProp
               type="button"
               className={selected === index ? "orbit-node active" : "orbit-node"}
               style={{
-                "--node-x": nodeX,
-                "--node-y": nodeY,
+                "--node-x": `${nodeX}%`,
+                "--node-y": `${nodeY}%`,
               } as CSSVariables}
               onMouseEnter={() => setSelected(index)}
               onFocus={() => setSelected(index)}

@@ -1,10 +1,10 @@
 # tsutsumi-portfolio-v2
 
-つつみんのポートフォリオサイトです。画面に表示する作品、コミュニティ、相互リンク、SNSは `src/data/portfolio.js` で管理します。
+つつみんのポートフォリオサイトです。画面に表示する作品、コミュニティ、相互リンク、SNSは `src/data/portfolio.ts` で管理します。
 
 ## 相互リンクを追加する
 
-相互リンクは `src/data/portfolio.js` の `mutualLinks` に追加します。`id` は重複しない値にしてください。
+相互リンクは `src/data/portfolio.ts` の `mutualLinks` に追加します。`id` は重複しない値にしてください。
 
 ### 特定のコミュニティに属する人
 

@@ -7,6 +7,7 @@ export function AboutSection() {
   const [lockedHobby, setLockedHobby] = useState(0);
   const [previewHobby, setPreviewHobby] = useState<number | null>(null);
   const dragStart = useRef<number | null>(null);
+  const suppressClick = useRef(false);
   const active = previewHobby ?? lockedHobby;
 
   const selectHobby = (index: number) => {
@@ -19,6 +20,7 @@ export function AboutSection() {
 
     const distance = event.clientX - dragStart.current;
     if (Math.abs(distance) > 38) {
+      suppressClick.current = true;
       setLockedHobby((current) => {
         if (distance < 0) return (current + 1) % hobbies.length;
         return (current - 1 + hobbies.length) % hobbies.length;
@@ -55,8 +57,9 @@ export function AboutSection() {
         className="strip-deck"
         onPointerLeave={() => setPreviewHobby(null)}
         onPointerDown={(event) => {
+          suppressClick.current = false;
           dragStart.current = event.clientX;
-          event.currentTarget.setPointerCapture(event.pointerId);
+          (event.target as Element).closest("button")?.setPointerCapture(event.pointerId);
         }}
         onPointerUp={endDrag}
         onPointerCancel={() => {
@@ -68,10 +71,15 @@ export function AboutSection() {
           <button
             className={index === active ? "photo-strip active" : "photo-strip"}
             type="button"
-            onPointerEnter={() => setPreviewHobby(index)}
+            onPointerEnter={(event) => {
+              if (event.pointerType === "mouse") setPreviewHobby(index);
+            }}
             onFocus={() => setPreviewHobby(index)}
             onBlur={() => setPreviewHobby(null)}
-            onClick={() => selectHobby(index)}
+            onClick={(event) => {
+              if (event.detail === 0 || !suppressClick.current) selectHobby(index);
+              suppressClick.current = false;
+            }}
             key={hobby.title}
             aria-pressed={lockedHobby === index}
           >
